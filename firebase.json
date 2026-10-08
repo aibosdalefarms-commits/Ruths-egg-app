@@ -1,0 +1,35 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "firestore.rules",
+      "**/.*",
+      "**/.*/**",
+      ".git/**",
+      ".claude/**",
+      ".firebase/**",
+      "**/node_modules/**",
+      "**/*.md",
+      "**/*.log",
+      "docs/**",
+      "branding/**",
+      "tools/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "emulators": {
+    "auth": { "port": 9098 },
+    "firestore": { "port": 8081 },
+    "ui": { "enabled": false },
+    "singleProjectMode": true
+  }
+}

@@ -1,0 +1,14 @@
+# Logs
+*.log
+firebase-debug.log*
+firebase-debug.*.log*
+firestore-debug.log*
+
+# Firebase cache
+.firebase/
+
+# Dependencies
+node_modules/
+
+# Claude Code worktrees
+.claude/worktrees/

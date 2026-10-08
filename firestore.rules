@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// Egg App security rules.
+// There are no passwords: the app signs in anonymously in the background, so only
+// requests coming from the app itself are answered. The data checks below stop
+// anything that isn't a well-formed egg entry from being saved.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validEntry(d) {
+      return d.keys().hasAll(['type', 'eggs', 'user', 'date', 'createdAt'])
+        && d.keys().hasOnly(['type', 'eggs', 'price', 'user', 'date', 'createdAt', 'updatedAt', 'adjust'])
+        && d.type in ['collected', 'sold', 'farm']
+        && d.eggs is int && d.eggs >= -9999 && d.eggs <= 9999
+        && d.user in ['Nate', 'Ruth']
+        && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && d.createdAt is timestamp
+        && (!('adjust' in d) || d.adjust is bool)
+        && (d.type == 'sold'
+              ? (d.price is number && d.price > 0 && d.price < 100)
+              : !('price' in d));
+    }
+
+    // One document per button tap (or correction)
+    match /entries/{entryId} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && validEntry(request.resource.data);
+      allow delete: if signedIn();
+    }
+
+    // Shared settings: the price list
+    match /settings/main {
+      allow read: if signedIn();
+      allow write: if signedIn()
+        && request.resource.data.keys().hasOnly(['prices', 'updatedAt'])
+        && request.resource.data.prices is list
+        && request.resource.data.prices.size() <= 20;
+    }
+  }
+}

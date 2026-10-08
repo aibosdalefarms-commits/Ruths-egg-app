@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "egg-app-local",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:\\Users\\ngabb\\OneDrive\\Documents\\Apps\\Egg App\\tools\\serve.js",
+        "5080"
+      ],
+      "port": 5080
+    }
+  ]
+}

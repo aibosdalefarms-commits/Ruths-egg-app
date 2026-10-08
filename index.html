@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Egg App</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Egg App">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+
+    <!-- Fonts (same as Bosdale Receipts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Palette taken from the chicken icon: comb red, grass green, egg brown */
+        :root {
+            --comb: #9E1B1F;
+            --comb-deep: #7E1418;
+            --comb-tint: #F8EAEA;
+            --comb-ring: rgba(158, 27, 31, 0.18);
+            --grass: #3F7D22;
+            --grass-tint: #EAF3E3;
+            --egg: #B87445;
+            --egg-tint: #F8EEE6;
+            --ink: #23272B;
+            --steel: #646970;
+            --steel-soft: #A3A7AD;
+            --steel-tint: #ECEDF0;
+            --line: #E3E4E7;
+            --line-strong: #CDD0D4;
+            --ground: #F5F4F1;
+            --surface: #FFFFFF;
+            --on-dark: #FFFFFF;
+            --scrim: rgba(20, 22, 25, 0.45);
+            --shadow: rgba(20, 22, 25, 0.14);
+            --font-display: 'Barlow Semi Condensed', 'Arial Narrow', system-ui, sans-serif;
+            --font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 16px;
+            --content: 560px;
+            --topbar-h: 56px;
+            --tabbar-h: 64px;
+            color-scheme: light;
+        }
+
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            margin: 0;
+            background: var(--ground);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 15px;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+        }
+        button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; touch-action: manipulation; }
+        button:disabled { opacity: 0.45; cursor: default; }
+        input, select { font: inherit; color: inherit; }
+        :focus-visible { outline: 2px solid var(--comb); outline-offset: 2px; }
+        .hidden { display: none !important; }
+        .i { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+        .num { font-variant-numeric: tabular-nums; }
+        .muted { color: var(--steel); }
+
+        /* ---------- Buttons ---------- */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            height: 48px; padding: 0 18px; border-radius: var(--r-md);
+            font-weight: 600; font-size: 16px; white-space: nowrap;
+        }
+        .btn .i { width: 18px; height: 18px; }
+        .btn-primary { background: var(--comb); color: var(--on-dark); }
+        .btn-primary:active { background: var(--comb-deep); }
+        .btn-quiet { background: var(--surface); border: 1px solid var(--line-strong); }
+        .btn-danger { background: var(--surface); border: 1px solid var(--comb); color: var(--comb); }
+        .btn-block { width: 100%; }
+        .text-btn { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--comb); padding: 8px 10px; border-radius: var(--r-sm); }
+        .text-btn .i { width: 18px; height: 18px; }
+        .icon-btn { width: 40px; height: 40px; flex: none; border-radius: 10px; display: grid; place-items: center; }
+        .icon-btn:active { background: var(--steel-tint); }
+
+        /* ---------- Who's this? ---------- */
+        .pick-screen { min-height: 100vh; min-height: 100dvh; background: var(--surface); display: flex; justify-content: center; }
+        .pick-inner { width: 100%; max-width: 420px; display: flex; flex-direction: column; justify-content: center; gap: 28px; padding: calc(32px + env(safe-area-inset-top, 0px)) 24px calc(32px + env(safe-area-inset-bottom, 0px)); }
+        .brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+        .brand-tile { width: 104px; height: 104px; border-radius: 26px; border: 1px solid var(--line); box-shadow: 0 8px 24px var(--shadow); background: var(--surface); overflow: hidden; }
+        .brand-tile img { width: 100%; height: 100%; display: block; }
+        .brand h1 { margin: 8px 0 0; font-family: var(--font-display); font-weight: 700; font-size: 32px; line-height: 1.1; }
+        .brand p { margin: 0; color: var(--steel); font-size: 17px; }
+        .pick-buttons { display: flex; flex-direction: column; gap: 14px; }
+        .pick-btn {
+            height: 76px; border-radius: var(--r-lg); background: var(--comb); color: var(--on-dark);
+            font-family: var(--font-display); font-weight: 700; font-size: 28px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            box-shadow: 0 4px 14px var(--comb-ring);
+        }
+        .pick-btn:active { background: var(--comb-deep); }
+        .pick-btn .i { width: 26px; height: 26px; }
+
+        /* ---------- App shell ---------- */
+        .shell { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+        .topbar {
+            flex: none; height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));
+            padding: env(safe-area-inset-top, 0px) 8px 0 14px;
+            display: flex; align-items: center; gap: 10px;
+            background: var(--surface); border-bottom: 1px solid var(--line);
+        }
+        .topbar img { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); }
+        .topbar .title { font-family: var(--font-display); font-weight: 700; font-size: 21px; flex: 1; }
+        .user-chip {
+            display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px;
+            border-radius: 17px; background: var(--comb-tint); color: var(--comb-deep); font-weight: 600;
+        }
+        .user-chip .i { width: 16px; height: 16px; }
+        .main { flex: 1; min-height: 0; overflow-y: auto; }
+        .tab { max-width: var(--content); margin: 0 auto; padding: 14px 14px 18px; min-height: 100%; display: flex; flex-direction: column; gap: 14px; }
+
+        .tabbar {
+            flex: none; height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            display: grid; grid-template-columns: 1fr 1fr;
+            background: var(--surface); border-top: 1px solid var(--line);
+        }
+        .tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--steel); font-weight: 600; font-size: 13px; }
+        .tabbar button .i { width: 24px; height: 24px; }
+        .tabbar button.active { color: var(--comb); }
+
+        .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
+        .label { font-size: 13px; font-weight: 600; color: var(--steel); text-transform: uppercase; letter-spacing: 0.04em; }
+
+        /* ---------- Record tab ---------- */
+        .today { padding: 16px 16px 14px; text-align: center; }
+        .today .big { font-family: var(--font-display); font-weight: 700; font-size: 72px; line-height: 1; margin-top: 6px; color: var(--ink); }
+        .today .unit { color: var(--steel); font-weight: 600; margin-top: 2px; }
+        .split { display: grid; grid-template-columns: 1fr 1fr; margin-top: 14px; border-top: 1px solid var(--line); }
+        .split > div { padding-top: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .split > div + div { border-left: 1px solid var(--line); }
+        .split span { font-size: 14px; color: var(--steel); font-weight: 600; }
+        .split b { font-family: var(--font-display); font-size: 30px; line-height: 1.1; }
+        .yday { margin-top: 12px; font-size: 14px; color: var(--steel); display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+        /* Day arrows sit in the card's top corners so they add no height */
+        .today { position: relative; }
+        .day-arrow { position: absolute; top: 6px; width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; color: var(--ink); }
+        .day-arrow .i { width: 26px; height: 26px; stroke-width: 2.2; }
+        .day-arrow:active { background: var(--steel-tint); }
+        .day-arrow:disabled { opacity: 0.2; }
+        #dayPrev { left: 6px; }
+        #dayNext { right: 6px; }
+        .back-today { height: 30px; padding: 0 12px; border-radius: 15px; background: var(--egg); color: var(--on-dark); font-weight: 700; font-size: 13px; }
+
+        /* Viewing a past day: egg-brown card and buttons so it never looks like today */
+        #tabRecord.past .today { background: var(--egg-tint); border-color: var(--egg); }
+        #tabRecord.past .today .label { color: var(--egg); }
+        #tabRecord.past .split, #tabRecord.past .split > div + div { border-color: rgba(184, 116, 69, 0.3); }
+        #tabRecord.past .add-btn b { color: var(--egg); }
+        #tabRecord.past .add-btn:active { background: var(--egg-tint); border-color: var(--egg); }
+
+        .add-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 220px; }
+        .add-btn {
+            background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-lg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+            box-shadow: 0 1px 2px var(--shadow); min-height: 96px;
+        }
+        .add-btn b { font-family: var(--font-display); font-weight: 700; font-size: 44px; line-height: 1; color: var(--comb); }
+        .add-btn span { font-size: 14px; color: var(--steel); font-weight: 600; }
+        .add-btn:active { background: var(--comb-tint); border-color: var(--comb); transform: scale(0.98); }
+        .add-btn.flash { animation: flash 0.35s ease-out; }
+        @keyframes flash { from { background: var(--comb-tint); border-color: var(--comb); } to { background: var(--surface); } }
+        .undo-row { display: flex; justify-content: center; }
+
+        /* ---------- Sales tab ---------- */
+        .weeks { display: grid; grid-template-columns: 1fr 1fr; }
+        .weeks > div { padding: 14px 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+        .weeks > div + div { border-left: 1px solid var(--line); }
+        .weeks .dz { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.05; margin-top: 4px; }
+        .weeks .dz small { font-size: 18px; color: var(--steel); font-weight: 600; }
+        .weeks .money { font-family: var(--font-display); font-weight: 600; font-size: 22px; color: var(--grass); }
+        .weeks .farm-line { font-size: 13px; color: var(--steel); margin-top: 2px; }
+
+        .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--steel-tint); border-radius: var(--r-md); }
+        .seg button { height: 42px; border-radius: 9px; font-weight: 600; font-size: 16px; color: var(--steel); }
+        .seg button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px var(--shadow); }
+        .seg-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+        .total-line { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px; }
+        .total-line b { font-family: var(--font-display); font-size: 22px; }
+
+        .price-list { overflow: hidden; }
+        .price-row { display: grid; grid-template-columns: 1fr auto 64px 64px; align-items: center; gap: 8px; padding: 10px 10px 10px 14px; }
+        .price-row + .price-row { border-top: 1px solid var(--line); }
+        .price-row .price { font-family: var(--font-display); font-weight: 700; font-size: 24px; }
+        .price-row .price small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--steel); }
+        .count-btn {
+            display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 10px;
+            border-radius: 10px; background: var(--steel-tint); font-weight: 700; font-size: 17px;
+        }
+        .count-btn .i { width: 15px; height: 15px; color: var(--steel); }
+        .count-btn:active { background: var(--line-strong); }
+        .mini-add {
+            height: 52px; border-radius: var(--r-md); background: var(--comb); color: var(--on-dark);
+            font-family: var(--font-display); font-weight: 700; font-size: 22px;
+        }
+        .mini-add:active { background: var(--comb-deep); transform: scale(0.97); }
+
+        .farm-card { padding: 18px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .farm-total {
+            display: inline-flex; align-items: baseline; gap: 8px; margin-top: 4px; padding: 4px 14px; border-radius: var(--r-md);
+            font-family: var(--font-display); font-weight: 700; font-size: 56px; line-height: 1.05;
+        }
+        .farm-total small { font-size: 24px; color: var(--steel); }
+        .farm-total .i { width: 20px; height: 20px; color: var(--steel); align-self: center; }
+        .farm-total:active { background: var(--steel-tint); }
+        .farm-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .farm-grid .add-btn { min-height: 104px; }
+        .farm-grid .add-btn b { color: var(--grass); }
+        .farm-grid .add-btn:active { background: var(--grass-tint); border-color: var(--grass); }
+
+        /* ---------- Layers: sheets and screens ---------- */
+        .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 40; opacity: 0; transition: opacity 0.18s; }
+        .scrim.open { opacity: 1; }
+        .sheet {
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+            max-width: var(--content); margin: 0 auto; max-height: 92dvh; overflow-y: auto;
+            background: var(--surface); border-radius: 20px 20px 0 0;
+            padding: 10px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+            transform: translateY(100%); transition: transform 0.22s ease-out;
+        }
+        .sheet.open { transform: none; }
+        .sheet .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--line-strong); margin: 0 auto 12px; }
+        .sheet h2 { margin: 0 0 4px; font-family: var(--font-display); font-weight: 700; font-size: 24px; }
+        .sheet .sub { margin: 0 0 16px; color: var(--steel); }
+        .sheet-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+
+        .menu-list { display: flex; flex-direction: column; margin: 4px -6px 0; }
+        .menu-item { display: flex; align-items: center; gap: 14px; height: 56px; padding: 0 10px; border-radius: var(--r-md); font-weight: 600; font-size: 17px; text-align: left; }
+        .menu-item:active { background: var(--steel-tint); }
+        .menu-item .i { color: var(--steel); width: 22px; height: 22px; }
+        .menu-item .end { margin-left: auto; color: var(--steel); font-weight: 500; font-size: 15px; }
+        .version { text-align: center; color: var(--steel-soft); font-size: 12px; margin-top: 10px; }
+
+        .screen { position: fixed; inset: 0; z-index: 30; background: var(--ground); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.22s ease-out; }
+        .screen.open { transform: none; }
+        .screen-head {
+            flex: none; height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));
+            padding: env(safe-area-inset-top, 0px) 10px 0 6px; display: flex; align-items: center; gap: 6px;
+            background: var(--surface); border-bottom: 1px solid var(--line);
+        }
+        .screen-head h2 { margin: 0; flex: 1; font-family: var(--font-display); font-weight: 700; font-size: 21px; }
+        .screen-body { flex: 1; overflow-y: auto; }
+        .screen-inner { max-width: var(--content); margin: 0 auto; padding: 14px 14px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+
+        /* History */
+        .day-group { overflow: hidden; }
+        .day-head { padding: 12px 14px 10px; background: var(--steel-tint); display: flex; flex-direction: column; gap: 2px; }
+        .day-head b { font-family: var(--font-display); font-size: 18px; }
+        .day-head span { font-size: 13px; color: var(--steel); }
+        .entry-row { width: 100%; display: grid; grid-template-columns: 62px 1fr auto 16px; gap: 10px; align-items: center; padding: 12px 14px; text-align: left; border-top: 1px solid var(--line); }
+        .entry-row:active { background: var(--steel-tint); }
+        .entry-row .time { font-size: 13px; color: var(--steel); }
+        .entry-row .what { font-weight: 600; }
+        .entry-row .what small { display: block; font-weight: 500; font-size: 13px; color: var(--steel); }
+        .entry-row .who { font-size: 13px; font-weight: 600; color: var(--steel); }
+        .entry-row .i { width: 16px; height: 16px; color: var(--steel-soft); }
+        .tag { display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; vertical-align: 2px; margin-left: 4px; }
+        .tag-collected { background: var(--egg-tint); color: var(--egg); }
+        .tag-sold { background: var(--grass-tint); color: var(--grass); }
+        .tag-farm { background: var(--steel-tint); color: var(--steel); }
+        .empty { text-align: center; color: var(--steel); padding: 28px 12px; }
+
+        /* Forms */
+        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+        .field > label, .field-label { font-size: 13px; font-weight: 600; color: var(--steel); }
+        .input {
+            width: 100%; min-width: 0; height: 48px; padding: 0 12px;
+            border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface);
+            font-size: 17px; -webkit-appearance: none; appearance: none;
+        }
+        .input:focus { outline: none; border-color: var(--comb); box-shadow: 0 0 0 3px var(--comb-ring); }
+        .stepper { display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; align-items: center; }
+        .stepper button { height: 56px; border-radius: var(--r-md); background: var(--steel-tint); font-size: 26px; font-weight: 700; }
+        .stepper button:active { background: var(--line-strong); }
+        .stepper .input { height: 56px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 30px; }
+        .stepper-unit { text-align: center; color: var(--steel); font-size: 14px; margin-top: 4px; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip { height: 42px; padding: 0 14px; border-radius: 21px; border: 1px solid var(--line-strong); background: var(--surface); font-weight: 600; font-size: 16px; }
+        .chip.active { background: var(--comb); border-color: var(--comb); color: var(--on-dark); }
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Prices */
+        .price-edit-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 6px 6px 16px; }
+        .price-edit-row + .price-edit-row { border-top: 1px solid var(--line); }
+        .price-edit-row b { font-family: var(--font-display); font-size: 24px; }
+        .add-price { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+        .prefix { position: relative; }
+        .prefix > span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--steel); font-weight: 600; }
+        .prefix .input { padding-left: 26px; }
+        .note { font-size: 14px; color: var(--steel); margin: 0; }
+
+        /* Toast */
+        .toast {
+            position: fixed; left: 50%; top: calc(var(--topbar-h) + 10px + env(safe-area-inset-top, 0px)); z-index: 60;
+            transform: translate(-50%, -12px); opacity: 0; pointer-events: none; transition: opacity 0.18s, transform 0.18s;
+            background: var(--ink); color: var(--on-dark); padding: 11px 18px; border-radius: 22px; font-weight: 600;
+            max-width: calc(100% - 32px); text-align: center; box-shadow: 0 6px 20px var(--shadow);
+        }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+        .toast.error { background: var(--comb); }
+        .banner { background: var(--comb-tint); color: var(--comb-deep); padding: 10px 14px; border-radius: var(--r-md); font-size: 14px; font-weight: 600; }
+
+        /* Short phones: tighten the Record tab so it still fits without scrolling */
+        @media (max-height: 700px) {
+            .today .big { font-size: 56px; }
+            .split b { font-size: 26px; }
+            .add-btn b { font-size: 38px; }
+            .add-btn { min-height: 80px; }
+            .add-grid { min-height: 172px; }
+            .today { padding: 12px 14px 10px; }
+            .split { margin-top: 10px; }
+            .split > div { padding-top: 8px; }
+            .yday { margin-top: 8px; }
+            .undo-row .text-btn { padding: 4px 10px; }
+            .tab { gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+            <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+            <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
+            <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
+            <symbol id="i-egg" viewBox="0 0 24 24"><path d="M12 22c4.4 0 7-3.1 7-7.5C19 9 15.5 2 12 2S5 9 5 14.5C5 18.9 7.6 22 12 22Z"/></symbol>
+            <symbol id="i-dollar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8M12 18V6"/></symbol>
+            <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+            <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+            <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1"/></symbol>
+            <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+            <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+            <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+            <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+            <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+            <symbol id="i-swap" viewBox="0 0 24 24"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></symbol>
+        </defs>
+    </svg>
+
+    <!-- ===== Who's this? ===== -->
+    <div id="pickScreen" class="pick-screen hidden">
+        <div class="pick-inner">
+            <div class="brand">
+                <div class="brand-tile"><img src="/icon-192.png" alt=""></div>
+                <h1>Egg App</h1>
+                <p>Who's using this phone?</p>
+            </div>
+            <div class="pick-buttons" id="pickButtons"></div>
+        </div>
+    </div>
+
+    <!-- ===== Main app ===== -->
+    <div id="shell" class="shell hidden">
+        <header class="topbar">
+            <img src="/icon-192.png" alt="">
+            <div class="title">Egg App</div>
+            <button class="user-chip" id="userChip"><svg class="i"><use href="#i-user"/></svg><span id="userName"></span></button>
+            <button class="icon-btn" id="menuBtn" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+        </header>
+
+        <main class="main">
+            <!-- Record -->
+            <section class="tab" id="tabRecord">
+                <div id="setupBanner" class="banner hidden">Not connected to Firebase yet. Fill in the Firebase settings in index.html (see SETUP-GUIDE.md).</div>
+                <div class="card today">
+                    <button class="day-arrow" id="dayPrev" aria-label="Previous day"><svg class="i"><use href="#i-chev-left"/></svg></button>
+                    <button class="day-arrow" id="dayNext" aria-label="Next day"><svg class="i"><use href="#i-chev"/></svg></button>
+                    <div class="label" id="todayLabel">Today</div>
+                    <div class="big num" id="todayTotal">0</div>
+                    <div class="unit">eggs collected</div>
+                    <div class="split" id="todaySplit"></div>
+                    <div class="yday hidden" id="ydayLine"><button class="back-today" id="backToday">Back to today</button></div>
+                </div>
+                <div class="add-grid">
+                    <button class="add-btn" data-collect="1"><b>+1</b><span>egg</span></button>
+                    <button class="add-btn" data-collect="6"><b>+6</b><span>half dozen</span></button>
+                    <button class="add-btn" data-collect="12"><b>+12</b><span>dozen</span></button>
+                    <button class="add-btn" data-collect="42"><b>+42</b><span>full tray</span></button>
+                </div>
+                <div class="undo-row"><button class="text-btn" data-undo="collected"><svg class="i"><use href="#i-undo"/></svg>Undo last</button></div>
+            </section>
+
+            <!-- Sales -->
+            <section class="tab hidden" id="tabSales">
+                <div class="card weeks">
+                    <div>
+                        <div class="label">Last week</div>
+                        <div class="dz num" id="lwDz"></div>
+                        <div class="money num" id="lwMoney"></div>
+                        <div class="farm-line num" id="lwFarm"></div>
+                    </div>
+                    <div>
+                        <div class="label">This week</div>
+                        <div class="dz num" id="twDz"></div>
+                        <div class="money num" id="twMoney"></div>
+                        <div class="farm-line num" id="twFarm"></div>
+                    </div>
+                </div>
+
+                <div class="seg" role="tablist">
+                    <button class="active" data-pane="customers">Customers</button>
+                    <button data-pane="farm">Farm</button>
+                </div>
+
+                <div id="paneCustomers">
+                    <div class="total-line" style="margin-bottom:8px"><span class="label">Sold this week</span><b class="num" id="custTotal"></b></div>
+                    <div class="card price-list" id="priceRows"></div>
+                    <div class="undo-row" style="margin-top:6px"><button class="text-btn" data-undo="sold"><svg class="i"><use href="#i-undo"/></svg>Undo last</button></div>
+                </div>
+
+                <div id="paneFarm" class="hidden">
+                    <div class="card farm-card">
+                        <div class="label">To the farm this week</div>
+                        <button class="farm-total num" id="farmTotal"></button>
+                        <div class="muted num" id="farmLast"></div>
+                    </div>
+                    <div class="farm-grid" style="margin-top:14px">
+                        <button class="add-btn" data-farm="6"><b>+6</b><span>half dozen</span></button>
+                        <button class="add-btn" data-farm="12"><b>+12</b><span>dozen</span></button>
+                        <button class="add-btn" data-farm="42"><b>+42</b><span>full tray</span></button>
+                    </div>
+                    <div class="undo-row" style="margin-top:6px"><button class="text-btn" data-undo="farm"><svg class="i"><use href="#i-undo"/></svg>Undo last</button></div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="tabbar">
+            <button class="active" data-tab="record"><svg class="i"><use href="#i-egg"/></svg>Record</button>
+            <button data-tab="sales"><svg class="i"><use href="#i-dollar"/></svg>Sales</button>
+        </nav>
+    </div>
+
+    <!-- ===== Layers ===== -->
+    <div id="scrim" class="scrim hidden"></div>
+
+    <div id="menuSheet" class="sheet hidden">
+        <div class="grab"></div>
+        <div class="menu-list">
+            <button class="menu-item" data-open="history"><svg class="i"><use href="#i-clock"/></svg>History</button>
+            <button class="menu-item" data-open="export"><svg class="i"><use href="#i-download"/></svg>Export</button>
+            <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
+            <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
+        </div>
+        <div class="version">Egg App v1.0</div>
+    </div>
+
+    <!-- Count correction (Customers row / Farm total) -->
+    <div id="countSheet" class="sheet hidden">
+        <div class="grab"></div>
+        <h2 id="countTitle"></h2>
+        <p class="sub">Set the total for this week. The difference is saved as a correction.</p>
+        <div class="stepper">
+            <button data-step="-0.5" aria-label="Less">−</button>
+            <input class="input num" id="countInput" inputmode="decimal" autocomplete="off">
+            <button data-step="0.5" aria-label="More">+</button>
+        </div>
+        <div class="stepper-unit">dozen</div>
+        <div class="sheet-actions">
+            <button class="btn btn-primary btn-block" id="countSave">Save</button>
+            <button class="btn btn-quiet btn-block" data-close>Cancel</button>
+        </div>
+    </div>
+
+    <!-- Add / edit entry (History) -->
+    <div id="entrySheet" class="sheet hidden">
+        <div class="grab"></div>
+        <h2 id="entryTitle">Edit entry</h2>
+        <div class="field">
+            <span class="field-label">Type</span>
+            <div class="seg seg-3" id="entryType">
+                <button data-type="collected">Collected</button>
+                <button data-type="sold">Sold</button>
+                <button data-type="farm">Farm</button>
+            </div>
+        </div>
+        <div class="field">
+            <span class="field-label" id="entryAmountLabel">Amount</span>
+            <div class="stepper">
+                <button id="entryMinus" aria-label="Less">−</button>
+                <input class="input num" id="entryAmount" inputmode="decimal" autocomplete="off">
+                <button id="entryPlus" aria-label="More">+</button>
+            </div>
+        </div>
+        <div class="field" id="entryPriceField">
+            <span class="field-label">Price per dozen</span>
+            <div class="chips" id="entryPrices"></div>
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label for="entryDate">Date</label>
+                <input type="date" class="input" id="entryDate">
+            </div>
+            <div class="field">
+                <span class="field-label">Person</span>
+                <div class="chips" id="entryUsers"></div>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn btn-primary btn-block" id="entrySave">Save</button>
+            <button class="btn btn-danger btn-block" id="entryDelete"><svg class="i"><use href="#i-trash"/></svg>Delete entry</button>
+            <button class="btn btn-quiet btn-block" data-close>Cancel</button>
+        </div>
+    </div>
+
+    <!-- Confirm -->
+    <div id="confirmSheet" class="sheet hidden">
+        <div class="grab"></div>
+        <h2 id="confirmTitle"></h2>
+        <p class="sub" id="confirmText"></p>
+        <div class="sheet-actions">
+            <button class="btn btn-primary btn-block" id="confirmOk"></button>
+            <button class="btn btn-quiet btn-block" data-close>Cancel</button>
+        </div>
+    </div>
+
+    <!-- History -->
+    <div id="historyScreen" class="screen hidden">
+        <div class="screen-head">
+            <button class="icon-btn" data-close aria-label="Back"><svg class="i"><use href="#i-back"/></svg></button>
+            <h2>History</h2>
+            <button class="text-btn" id="historyAdd"><svg class="i"><use href="#i-plus"/></svg>Add</button>
+        </div>
+        <div class="screen-body"><div class="screen-inner" id="historyList"></div></div>
+    </div>
+
+    <!-- Export -->
+    <div id="exportScreen" class="screen hidden">
+        <div class="screen-head">
+            <button class="icon-btn" data-close aria-label="Back"><svg class="i"><use href="#i-back"/></svg></button>
+            <h2>Export</h2>
+        </div>
+        <div class="screen-body"><div class="screen-inner">
+            <p class="note">Download a spreadsheet (CSV) with one row per entry. It opens in Excel or Google Sheets.</p>
+            <div class="chips" id="exportQuick">
+                <button class="chip" data-range="month">This month</button>
+                <button class="chip" data-range="year">This year</button>
+                <button class="chip" data-range="lastyear">Last year</button>
+                <button class="chip" data-range="all">Everything</button>
+            </div>
+            <div class="field-row">
+                <div class="field"><label for="exportFrom">From</label><input type="date" class="input" id="exportFrom"></div>
+                <div class="field"><label for="exportTo">To</label><input type="date" class="input" id="exportTo"></div>
+            </div>
+            <button class="btn btn-primary btn-block" id="exportGo"><svg class="i"><use href="#i-download"/></svg>Download CSV</button>
+        </div></div>
+    </div>
+
+    <!-- Prices -->
+    <div id="pricesScreen" class="screen hidden">
+        <div class="screen-head">
+            <button class="icon-btn" data-close aria-label="Back"><svg class="i"><use href="#i-back"/></svg></button>
+            <h2>Prices</h2>
+        </div>
+        <div class="screen-body"><div class="screen-inner">
+            <p class="note">The prices per dozen shown on the Customers tab. Changes show up on both phones.</p>
+            <div class="card" id="priceEditList"></div>
+            <div class="add-price">
+                <div class="prefix"><span>$</span><input class="input num" id="newPrice" inputmode="decimal" placeholder="6.00" autocomplete="off"></div>
+                <button class="btn btn-primary" id="addPrice"><svg class="i"><use href="#i-plus"/></svg>Add</button>
+            </div>
+        </div></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- Firebase (compat SDK, same as Bosdale Receipts) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ---------- Settings ----------
+        const USERS = ['Nate', 'Ruth'];
+        const DEFAULT_PRICES = [4, 4.5, 5, 5.5];
+        const USER_KEY = 'eggapp.user';
+
+        // From Ruth's Firebase project: Project settings → General → Your apps → Web app → Config
+        let firebaseConfig = {
+            apiKey: "AIzaSyAgX-2jrENjDpDTFe2LYMoJlOW1I3eUpzk",
+            authDomain: "ruths-egg-app.firebaseapp.com",
+            projectId: "ruths-egg-app",
+            storageBucket: "ruths-egg-app.firebasestorage.app",
+            messagingSenderId: "720322434561",
+            appId: "1:720322434561:web:5ea42e6ff209ce450c5200"
+        };
+
+        // Testing on this computer only: opened at localhost, the app uses the private
+        // test copy (Firebase emulators) instead of the real database. Never runs on the website.
+        const isLocalTestCopy = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        if (isLocalTestCopy) {
+            firebaseConfig = { apiKey: 'demo-key', authDomain: 'demo-egg-app.firebaseapp.com', projectId: 'demo-egg-app' };
+        }
+        const notConfigured = firebaseConfig.projectId === 'REPLACE_ME';
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        if (isLocalTestCopy) {
+            auth.useEmulator('http://127.0.0.1:9098');
+            db.useEmulator('127.0.0.1', 8081);
+        }
+        const entriesRef = db.collection('entries');
+        const settingsRef = db.collection('settings').doc('main');
+        const serverTime = () => firebase.firestore.FieldValue.serverTimestamp();
+
+        // ---------- Small helpers ----------
+        const $ = id => document.getElementById(id);
+        const pad = n => String(n).padStart(2, '0');
+        const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        const parseYmd = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+        const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+        const weekStart = s => { const d = parseYmd(s); d.setDate(d.getDate() - d.getDay()); return ymd(d); }; // weeks run Sunday–Saturday
+        const sum = (list, fn) => list.reduce((t, e) => t + fn(e), 0);
+        const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+        function fmtDz(eggs) {
+            const v = Math.round(eggs / 12 * 10) / 10;
+            return (v === 0 ? 0 : v).toFixed(1);
+        }
+        const fmtMoney = cents => '$' + (cents / 100).toFixed(2);
+        const fmtPrice = p => '$' + Number(p).toFixed(2);
+        const valueCents = e => e.type === 'sold' ? Math.round(e.eggs / 12 * e.price * 100) : 0;
+        const fmtTime = ms => new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const fmtDay = (s, opts) => parseYmd(s).toLocaleDateString([], opts || { weekday: 'long', month: 'short', day: 'numeric' });
+        const parseNum = s => parseFloat(String(s).replace(',', '.').replace('$', '').trim());
+
+        function readUser() { try { const u = localStorage.getItem(USER_KEY); return USERS.includes(u) ? u : null; } catch (e) { return null; } }
+        function saveUser(u) { try { u ? localStorage.setItem(USER_KEY, u) : localStorage.removeItem(USER_KEY); } catch (e) {} }
+
+        let toastTimer;
+        function toast(msg, isError) {
+            const t = $('toast');
+            t.textContent = msg;
+            t.classList.toggle('error', !!isError);
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), isError ? 3500 : 1600);
+        }
+        function showError(err) {
+            console.error(err);
+            toast("Couldn't reach the database. Check your connection.", true);
+        }
+        const buzz = () => { try { navigator.vibrate && navigator.vibrate(15); } catch (e) {} };
+
+        // ---------- State ----------
+        let me = readUser();
+        let today = ymd(new Date());
+        let recent = [];          // entries from the start of last week onward (live)
+        let prices = DEFAULT_PRICES.slice();
+        let salesPane = 'customers';
+        let recordDay = null;     // a past day being viewed on the Record tab; null = today
+        let dayEntries = null;    // live entries for that day when it's older than `recent` covers
+        let unsubDay = null;
+        const viewDay = () => recordDay || today;
+
+        function docToEntry(doc) {
+            const d = doc.data({ serverTimestamps: 'estimate' });
+            return { id: doc.id, ...d, ts: d.createdAt ? d.createdAt.toMillis() : Date.now() };
+        }
+
+        // ---------- Live data ----------
+        let unsubRecent = null, recentFrom = null;
+        function subscribeRecent() {
+            const from = addDays(weekStart(today), -7);
+            if (from === recentFrom) return;
+            recentFrom = from;
+            if (unsubRecent) unsubRecent();
+            unsubRecent = entriesRef.where('date', '>=', from).onSnapshot(snap => {
+                recent = snap.docs.map(docToEntry);
+                render();
+            }, showError);
+        }
+
+        function subscribeSettings() {
+            settingsRef.onSnapshot(doc => {
+                const p = doc.exists && Array.isArray(doc.data().prices) ? doc.data().prices : DEFAULT_PRICES;
+                prices = p.filter(n => typeof n === 'number').sort((a, b) => a - b);
+                render();
+                renderPriceEditor();
+            }, showError);
+        }
+
+        // ---------- Writing ----------
+        function addEntry(type, eggs, extra) {
+            if (!me) return;
+            const data = { type, eggs, user: me, date: today, createdAt: serverTime(), ...extra };
+            buzz();
+            entriesRef.add(data).catch(showError);
+        }
+
+        function describe(e) {
+            const dz = fmtDz(Math.abs(e.eggs));
+            const sign = e.eggs < 0 ? '−' : '+';
+            if (e.type === 'collected') return `${sign}${Math.abs(e.eggs)} egg${Math.abs(e.eggs) === 1 ? '' : 's'}`;
+            if (e.type === 'sold') return `${sign}${dz} dz at ${fmtPrice(e.price)}`;
+            return `${sign}${dz} dz to the farm`;
+        }
+
+        function undoLast(type) {
+            const isCollect = type === 'collected';
+            const from = isCollect ? viewDay() : weekStart(today);
+            const to = isCollect ? viewDay() : today;
+            const source = isCollect ? recordSource() : recent;
+            const mine = source.filter(e => e.type === type && e.user === me && e.date >= from && e.date <= to);
+            if (!mine.length) {
+                toast(isCollect ? `Nothing to undo ${recordDay ? 'on ' + shortDay(recordDay) : 'today'} for ${me}` : `Nothing to undo this week for ${me}`);
+                return;
+            }
+            const last = mine.reduce((a, b) => (b.ts > a.ts ? b : a));
+            confirmSheet({
+                title: 'Undo last entry?',
+                text: `Remove ${describe(last)}${last.adjust ? ' (correction)' : ''}, added by ${last.user} at ${fmtTime(last.ts)}.`,
+                ok: 'Remove',
+                onOk: () => entriesRef.doc(last.id).delete().then(() => toast('Removed')).catch(showError)
+            });
+        }
+
+        // ---------- Rendering ----------
+        function render() {
+            renderRecord();
+            renderSales();
+        }
+
+        // ---------- Record tab: which day is shown ----------
+        const shortDay = s => fmtDay(s, s.slice(0, 4) === today.slice(0, 4)
+            ? { weekday: 'short', month: 'short', day: 'numeric' }
+            : { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const recordSource = () => dayEntries || recent;
+        const dayLoading = () => !!unsubDay && !dayEntries;
+
+        function setRecordDay(d) {
+            recordDay = d && d < today ? d : null;
+            if (unsubDay) { unsubDay(); unsubDay = null; }
+            dayEntries = null;
+            // `recent` only reaches back to the start of last week; older days get their own live query
+            if (recordDay && (!recentFrom || recordDay < recentFrom)) {
+                unsubDay = entriesRef.where('date', '==', recordDay).onSnapshot(snap => {
+                    dayEntries = snap.docs.map(docToEntry);
+                    renderRecord();
+                }, showError);
+            }
+            renderRecord();
+        }
+
+        function renderRecord() {
+            const day = viewDay();
+            const dayList = recordSource().filter(e => e.type === 'collected' && e.date === day);
+            const loading = dayLoading();
+            $('tabRecord').classList.toggle('past', !!recordDay);
+            $('dayNext').disabled = !recordDay;
+            $('todayLabel').textContent = !recordDay ? 'Today · ' + shortDay(today)
+                : day === addDays(today, -1) ? 'Yesterday · ' + shortDay(day)
+                : shortDay(day);
+            $('todayTotal').textContent = loading ? '…' : sum(dayList, e => e.eggs);
+            $('todaySplit').innerHTML = USERS.map(u =>
+                `<div><span>${esc(u)}</span><b class="num">${loading ? '…' : sum(dayList.filter(e => e.user === u), e => e.eggs)}</b></div>`
+            ).join('');
+            $('ydayLine').classList.toggle('hidden', !recordDay);
+        }
+
+        $('dayPrev').addEventListener('click', () => setRecordDay(addDays(viewDay(), -1)));
+        $('dayNext').addEventListener('click', () => setRecordDay(addDays(viewDay(), 1)));
+        $('ydayLine').addEventListener('click', e => { if (e.target.closest('#backToday')) setRecordDay(null); });
+
+        function weekStats(from) {
+            const to = addDays(from, 6);
+            const list = recent.filter(e => e.date >= from && e.date <= to);
+            const sold = list.filter(e => e.type === 'sold');
+            return {
+                list,
+                soldEggs: sum(sold, e => e.eggs),
+                cents: sum(sold, valueCents),
+                farmEggs: sum(list.filter(e => e.type === 'farm'), e => e.eggs)
+            };
+        }
+
+        function renderSales() {
+            const ws = weekStart(today);
+            const tw = weekStats(ws), lw = weekStats(addDays(ws, -7));
+            $('lwDz').innerHTML = `${fmtDz(lw.soldEggs)} <small>dz</small>`;
+            $('lwMoney').textContent = fmtMoney(lw.cents);
+            $('lwFarm').textContent = `Farm: ${fmtDz(lw.farmEggs)} dz`;
+            $('twDz').innerHTML = `${fmtDz(tw.soldEggs)} <small>dz</small>`;
+            $('twMoney').textContent = fmtMoney(tw.cents);
+            $('twFarm').textContent = `Farm: ${fmtDz(tw.farmEggs)} dz`;
+
+            // Customers: one row per price, plus any price sold this week that's no longer in the list
+            const sold = tw.list.filter(e => e.type === 'sold');
+            const byPrice = {};
+            sold.forEach(e => { byPrice[e.price] = (byPrice[e.price] || 0) + e.eggs; });
+            const rowPrices = [...new Set([...prices, ...Object.keys(byPrice).map(Number).filter(p => byPrice[p] !== 0)])].sort((a, b) => a - b);
+            $('custTotal').textContent = `${fmtDz(tw.soldEggs)} dz`;
+            $('priceRows').innerHTML = rowPrices.length ? rowPrices.map(p => {
+                const eggs = byPrice[p] || 0;
+                const cents = Math.round(eggs / 12 * p * 100);
+                return `<div class="price-row">
+                    <div class="price num">${fmtPrice(p)}<small>${eggs ? fmtMoney(cents) : 'per dozen'}</small></div>
+                    <button class="count-btn num" data-count="${p}">${fmtDz(eggs)} dz<svg class="i"><use href="#i-pencil"/></svg></button>
+                    <button class="mini-add" data-sell="${p}" data-eggs="6">+6</button>
+                    <button class="mini-add" data-sell="${p}" data-eggs="12">+12</button>
+                </div>`;
+            }).join('') : '<div class="empty">No prices yet. Add some under Menu → Prices.</div>';
+
+            $('farmTotal').innerHTML = `${fmtDz(tw.farmEggs)} <small>dz</small><svg class="i"><use href="#i-pencil"/></svg>`;
+            $('farmLast').textContent = `Last week: ${fmtDz(lw.farmEggs)} dz`;
+        }
+
+        // ---------- Layers (sheets + screens) with Android back button support ----------
+        const layers = [];
+        let ignorePops = 0;
+        function openLayer(el, opts = {}) {
+            const isSheet = el.classList.contains('sheet');
+            if (isSheet) { $('scrim').classList.remove('hidden'); }
+            el.classList.remove('hidden');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                el.classList.add('open');
+                if (isSheet) $('scrim').classList.add('open');
+            }));
+            layers.push({ el, onClose: opts.onClose });
+            if (opts.replace) history.replaceState({ layer: layers.length }, '');
+            else history.pushState({ layer: layers.length }, '');
+        }
+        function hideLayer(l) {
+            l.el.classList.remove('open');
+            setTimeout(() => { if (!l.el.classList.contains('open')) l.el.classList.add('hidden'); }, 230);
+            if (l.onClose) l.onClose();
+            if (!layers.some(x => x.el.classList.contains('sheet'))) {
+                $('scrim').classList.remove('open');
+                setTimeout(() => { if (!$('scrim').classList.contains('open')) $('scrim').classList.add('hidden'); }, 200);
+            }
+        }
+        // Close the top n layers. `swap` closes without touching history so the next openLayer can replace it.
+        function closeLayers(n = 1, swap = false) {
+            n = Math.min(n, layers.length);
+            if (!n) return;
+            for (let k = 0; k < n; k++) hideLayer(layers.pop());
+            if (swap) return;
+            ignorePops++;
+            history.go(-n);
+        }
+        window.addEventListener('popstate', () => {
+            if (ignorePops > 0) { ignorePops--; return; }
+            if (layers.length) hideLayer(layers.pop());
+        });
+        document.addEventListener('click', e => {
+            if (e.target.closest('[data-close]')) closeLayers(1);
+        });
+        $('scrim').addEventListener('click', () => closeLayers(1));
+
+        let confirmAction = null;
+        function confirmSheet({ title, text, ok, onOk }) {
+            $('confirmTitle').textContent = title;
+            $('confirmText').textContent = text;
+            $('confirmOk').textContent = ok;
+            confirmAction = onOk;
+            openLayer($('confirmSheet'));
+        }
+        $('confirmOk').addEventListener('click', () => {
+            const action = confirmAction;
+            confirmAction = null;
+            // A confirm opened from the entry sheet closes both
+            const fromEntry = layers.length >= 2 && layers[layers.length - 2].el === $('entrySheet') && action && action.closesParent;
+            closeLayers(fromEntry ? 2 : 1);
+            if (action) action();
+        });
+
+        // ---------- Who's this? ----------
+        $('pickButtons').innerHTML = USERS.map(u =>
+            `<button class="pick-btn" data-user="${esc(u)}"><svg class="i"><use href="#i-user"/></svg>${esc(u)}</button>`
+        ).join('');
+        $('pickButtons').addEventListener('click', e => {
+            const b = e.target.closest('[data-user]');
+            if (!b) return;
+            me = b.dataset.user;
+            saveUser(me);
+            showApp();
+        });
+
+        function showPick() {
+            $('shell').classList.add('hidden');
+            $('pickScreen').classList.remove('hidden');
+        }
+        function showApp() {
+            $('pickScreen').classList.add('hidden');
+            $('shell').classList.remove('hidden');
+            $('userName').textContent = me;
+            $('menuUser').textContent = me;
+            render();
+        }
+
+        // ---------- Tabs ----------
+        document.querySelector('.tabbar').addEventListener('click', e => {
+            const b = e.target.closest('[data-tab]');
+            if (!b) return;
+            document.querySelectorAll('.tabbar button').forEach(x => x.classList.toggle('active', x === b));
+            $('tabRecord').classList.toggle('hidden', b.dataset.tab !== 'record');
+            $('tabSales').classList.toggle('hidden', b.dataset.tab !== 'sales');
+        });
+        document.querySelector('#tabSales .seg').addEventListener('click', e => {
+            const b = e.target.closest('[data-pane]');
+            if (!b) return;
+            salesPane = b.dataset.pane;
+            b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+            $('paneCustomers').classList.toggle('hidden', salesPane !== 'customers');
+            $('paneFarm').classList.toggle('hidden', salesPane !== 'farm');
+        });
+
+        function flash(btn) {
+            btn.classList.remove('flash');
+            void btn.offsetWidth;
+            btn.classList.add('flash');
+        }
+
+        // ---------- Record + Sales buttons ----------
+        document.addEventListener('click', e => {
+            const c = e.target.closest('[data-collect]');
+            if (c) {
+                const n = Number(c.dataset.collect);
+                if (dayLoading()) return;
+                addEntry('collected', n, { date: viewDay() });
+                flash(c);
+                toast(`+${n} egg${n === 1 ? '' : 's'} · ${recordDay ? shortDay(recordDay) : me}`);
+                return;
+            }
+            const s = e.target.closest('[data-sell]');
+            if (s) {
+                const p = Number(s.dataset.sell), n = Number(s.dataset.eggs);
+                addEntry('sold', n, { price: p });
+                toast(`+${fmtDz(n)} dz at ${fmtPrice(p)}`);
+                return;
+            }
+            const f = e.target.closest('[data-farm]');
+            if (f) {
+                const n = Number(f.dataset.farm);
+                addEntry('farm', n);
+                flash(f);
+                toast(`+${fmtDz(n)} dz to the farm`);
+                return;
+            }
+            const u = e.target.closest('[data-undo]');
+            if (u) { undoLast(u.dataset.undo); return; }
+            const cnt = e.target.closest('[data-count]');
+            if (cnt) {
+                const p = Number(cnt.dataset.count);
+                const eggs = sum(recent.filter(x => x.type === 'sold' && x.price === p && x.date >= weekStart(today) && x.date <= today), x => x.eggs);
+                openCountSheet({ title: `${fmtPrice(p)} sold this week`, type: 'sold', price: p, eggs });
+            }
+        });
+        $('farmTotal').addEventListener('click', () => {
+            const eggs = sum(recent.filter(x => x.type === 'farm' && x.date >= weekStart(today) && x.date <= today), x => x.eggs);
+            openCountSheet({ title: 'Farm this week', type: 'farm', eggs });
+        });
+
+        // ---------- Count correction ----------
+        let countCtx = null;
+        function openCountSheet(ctx) {
+            countCtx = ctx;
+            $('countTitle').textContent = ctx.title;
+            $('countInput').value = fmtDz(ctx.eggs);
+            openLayer($('countSheet'));
+        }
+        $('countSheet').addEventListener('click', e => {
+            const b = e.target.closest('[data-step]');
+            if (!b) return;
+            const v = parseNum($('countInput').value) || 0;
+            $('countInput').value = Math.max(0, Math.round((v + Number(b.dataset.step)) * 2) / 2).toFixed(1);
+        });
+        $('countSave').addEventListener('click', () => {
+            const v = parseNum($('countInput').value);
+            if (!isFinite(v) || v < 0 || v > 999) { toast('Enter a number of dozen, like 3.5', true); return; }
+            const diff = Math.round(v * 12) - countCtx.eggs;
+            closeLayers(1);
+            if (diff === 0) return;
+            addEntry(countCtx.type, diff, countCtx.type === 'sold' ? { price: countCtx.price, adjust: true } : { adjust: true });
+            toast(`Set to ${fmtDz(Math.round(v * 12))} dz`);
+        });
+
+        // ---------- Menu ----------
+        const openMenu = () => openLayer($('menuSheet'));
+        $('menuBtn').addEventListener('click', openMenu);
+        $('userChip').addEventListener('click', openMenu);
+        $('menuSheet').addEventListener('click', e => {
+            const b = e.target.closest('[data-open]');
+            if (!b) return;
+            closeLayers(1, true);
+            if (b.dataset.open === 'history') openHistory();
+            if (b.dataset.open === 'export') openExport();
+            if (b.dataset.open === 'prices') openLayer($('pricesScreen'), { replace: true });
+        });
+        $('switchUser').addEventListener('click', () => {
+            closeLayers(1);
+            me = null;
+            saveUser(null);
+            showPick();
+        });
+
+        // ---------- History ----------
+        let histDays = 30, histUnsub = null, histEntries = [];
+        function openHistory() {
+            histDays = 30;
+            subscribeHistory();
+            openLayer($('historyScreen'), { replace: true, onClose: () => { if (histUnsub) histUnsub(); histUnsub = null; } });
+        }
+        function subscribeHistory() {
+            if (histUnsub) histUnsub();
+            const from = addDays(today, -(histDays - 1));
+            $('historyList').innerHTML = '<div class="empty">Loading…</div>';
+            histUnsub = entriesRef.where('date', '>=', from).orderBy('date', 'desc').onSnapshot(snap => {
+                histEntries = snap.docs.map(docToEntry);
+                renderHistory();
+            }, showError);
+        }
+        function renderHistory() {
+            const byDay = {};
+            histEntries.forEach(e => { (byDay[e.date] = byDay[e.date] || []).push(e); });
+            const days = Object.keys(byDay).sort().reverse();
+            const typeLabel = { collected: 'Collected', sold: 'Sold', farm: 'Farm' };
+            const html = days.map(d => {
+                const list = byDay[d].sort((a, b) => b.ts - a.ts);
+                const col = sum(list.filter(e => e.type === 'collected'), e => e.eggs);
+                const sold = list.filter(e => e.type === 'sold');
+                const farm = sum(list.filter(e => e.type === 'farm'), e => e.eggs);
+                const bits = [`${col} eggs collected`];
+                if (sold.length) bits.push(`${fmtDz(sum(sold, e => e.eggs))} dz sold (${fmtMoney(sum(sold, valueCents))})`);
+                if (farm) bits.push(`${fmtDz(farm)} dz farm`);
+                return `<div class="card day-group">
+                    <div class="day-head"><b>${esc(fmtDay(d))}</b><span class="num">${esc(bits.join(' · '))}</span></div>
+                    ${list.map(e => `<button class="entry-row" data-entry="${esc(e.id)}">
+                        <span class="time num">${esc(fmtTime(e.ts))}</span>
+                        <span class="what num">${esc(describe(e))}<span class="tag tag-${esc(e.type)}">${typeLabel[e.type] || esc(e.type)}</span>${e.adjust ? '<small>Correction</small>' : ''}</span>
+                        <span class="who">${esc(e.user)}</span>
+                        <svg class="i"><use href="#i-chev"/></svg>
+                    </button>`).join('')}
+                </div>`;
+            }).join('');
+            $('historyList').innerHTML = (html || `<div class="empty">No entries in the last ${histDays} days.</div>`)
+                + `<button class="btn btn-quiet btn-block" id="historyMore">Show older (before ${esc(fmtDay(addDays(today, -(histDays - 1)), { month: 'short', day: 'numeric', year: 'numeric' }))})</button>`;
+        }
+        $('historyList').addEventListener('click', e => {
+            if (e.target.closest('#historyMore')) { histDays += 30; subscribeHistory(); return; }
+            const row = e.target.closest('[data-entry]');
+            if (row) {
+                const entry = histEntries.find(x => x.id === row.dataset.entry);
+                if (entry) openEntrySheet(entry);
+            }
+        });
+        $('historyAdd').addEventListener('click', () => openEntrySheet(null));
+
+        // ---------- Add / edit entry ----------
+        let entryCtx = null; // { id, type, eggs, price, date, user, adjust }
+        function openEntrySheet(entry) {
+            entryCtx = entry
+                ? { id: entry.id, type: entry.type, eggs: entry.eggs, price: entry.price, date: entry.date, user: entry.user, adjust: !!entry.adjust }
+                : { id: null, type: 'collected', eggs: 12, price: prices[0] ?? DEFAULT_PRICES[0], date: today, user: me, adjust: false };
+            $('entryTitle').textContent = entry ? 'Edit entry' : 'Add entry';
+            $('entryDelete').classList.toggle('hidden', !entry);
+            $('entryDate').value = entryCtx.date;
+            $('entryDate').max = today;
+            renderEntrySheet();
+            openLayer($('entrySheet'));
+        }
+        const entryUnitIsDozen = () => entryCtx.type !== 'collected';
+        function renderEntrySheet() {
+            const c = entryCtx;
+            $('entryType').querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.type === c.type));
+            $('entryAmountLabel').textContent = entryUnitIsDozen() ? 'Dozen' : 'Eggs';
+            $('entryAmount').value = entryUnitIsDozen() ? fmtDz(c.eggs) : c.eggs;
+            $('entryPriceField').classList.toggle('hidden', c.type !== 'sold');
+            const plist = [...new Set([...prices, ...(c.price != null ? [c.price] : [])])].sort((a, b) => a - b);
+            $('entryPrices').innerHTML = plist.map(p => `<button class="chip num${p === c.price ? ' active' : ''}" data-price="${p}">${fmtPrice(p)}</button>`).join('');
+            $('entryUsers').innerHTML = USERS.map(u => `<button class="chip${u === c.user ? ' active' : ''}" data-u="${esc(u)}">${esc(u)}</button>`).join('');
+        }
+        function readEntryAmount() {
+            const v = parseNum($('entryAmount').value);
+            if (!isFinite(v)) return null;
+            return entryUnitIsDozen() ? Math.round(v * 12) : Math.round(v);
+        }
+        $('entryType').addEventListener('click', e => {
+            const b = e.target.closest('[data-type]');
+            if (!b) return;
+            const eggs = readEntryAmount();
+            if (eggs !== null) entryCtx.eggs = eggs;
+            entryCtx.type = b.dataset.type;
+            if (entryCtx.type === 'sold' && entryCtx.price == null) entryCtx.price = prices[0] ?? DEFAULT_PRICES[0];
+            renderEntrySheet();
+        });
+        function stepEntry(dir) {
+            const eggs = readEntryAmount() ?? 0;
+            entryCtx.eggs = eggs + dir * (entryUnitIsDozen() ? 6 : 1);
+            if (!entryCtx.adjust && entryCtx.eggs < 0) entryCtx.eggs = 0;
+            renderEntrySheet();
+        }
+        $('entryMinus').addEventListener('click', () => stepEntry(-1));
+        $('entryPlus').addEventListener('click', () => stepEntry(1));
+        $('entryPrices').addEventListener('click', e => {
+            const b = e.target.closest('[data-price]');
+            if (!b) return;
+            entryCtx.eggs = readEntryAmount() ?? entryCtx.eggs;
+            entryCtx.price = Number(b.dataset.price);
+            renderEntrySheet();
+        });
+        $('entryUsers').addEventListener('click', e => {
+            const b = e.target.closest('[data-u]');
+            if (!b) return;
+            entryCtx.eggs = readEntryAmount() ?? entryCtx.eggs;
+            entryCtx.user = b.dataset.u;
+            renderEntrySheet();
+        });
+        $('entrySave').addEventListener('click', () => {
+            const c = entryCtx;
+            const eggs = readEntryAmount();
+            const date = $('entryDate').value;
+            if (eggs === null || eggs === 0 || Math.abs(eggs) > 9999) { toast('Enter an amount', true); return; }
+            if (eggs < 0 && !c.adjust) { toast('Amount can’t be negative', true); return; }
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { toast('Pick a date', true); return; }
+            if (c.type === 'sold' && c.price == null) { toast('Pick a price', true); return; }
+            const data = { type: c.type, eggs, user: c.user, date };
+            if (c.type === 'sold') data.price = c.price;
+            closeLayers(1);
+            if (c.id) {
+                data.updatedAt = serverTime();
+                if (c.type !== 'sold') data.price = firebase.firestore.FieldValue.delete();
+                entriesRef.doc(c.id).update(data).then(() => toast('Saved')).catch(showError);
+            } else {
+                data.createdAt = serverTime();
+                entriesRef.add(data).then(() => toast('Added')).catch(showError);
+            }
+        });
+        $('entryDelete').addEventListener('click', () => {
+            const id = entryCtx.id;
+            const action = () => entriesRef.doc(id).delete().then(() => toast('Deleted')).catch(showError);
+            action.closesParent = true;
+            confirmSheet({ title: 'Delete this entry?', text: 'This can’t be undone.', ok: 'Delete', onOk: action });
+        });
+
+        // ---------- Export ----------
+        function setExportRange(range) {
+            const y = Number(today.slice(0, 4));
+            const map = {
+                month: [today.slice(0, 8) + '01', today],
+                year: [`${y}-01-01`, today],
+                lastyear: [`${y - 1}-01-01`, `${y - 1}-12-31`],
+                all: ['2000-01-01', today]
+            };
+            [$('exportFrom').value, $('exportTo').value] = map[range];
+            $('exportQuick').querySelectorAll('.chip').forEach(b => b.classList.toggle('active', b.dataset.range === range));
+        }
+        function openExport() {
+            setExportRange('year');
+            openLayer($('exportScreen'), { replace: true });
+        }
+        $('exportQuick').addEventListener('click', e => {
+            const b = e.target.closest('[data-range]');
+            if (b) setExportRange(b.dataset.range);
+        });
+        ['exportFrom', 'exportTo'].forEach(id => $(id).addEventListener('input', () =>
+            $('exportQuick').querySelectorAll('.chip').forEach(b => b.classList.remove('active'))));
+        $('exportGo').addEventListener('click', async () => {
+            const from = $('exportFrom').value, to = $('exportTo').value;
+            if (!from || !to || from > to) { toast('Pick a valid date range', true); return; }
+            const btn = $('exportGo');
+            btn.disabled = true;
+            try {
+                const snap = await entriesRef.where('date', '>=', from).where('date', '<=', to).orderBy('date').get();
+                const rows = snap.docs.map(docToEntry).sort((a, b) => a.date.localeCompare(b.date) || a.ts - b.ts);
+                if (!rows.length) { toast('No entries in that range'); return; }
+                const typeLabel = { collected: 'Collected', sold: 'Sold', farm: 'Farm' };
+                const cell = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+                const lines = [['Date', 'Time', 'Type', 'Eggs', 'Dozen', 'Price per dozen', 'Value', 'Person', 'Note'].join(',')];
+                rows.forEach(e => lines.push([
+                    e.date, fmtTime(e.ts), typeLabel[e.type] || e.type, e.eggs, (e.eggs / 12).toFixed(2),
+                    e.type === 'sold' ? Number(e.price).toFixed(2) : '',
+                    e.type === 'sold' ? (valueCents(e) / 100).toFixed(2) : '',
+                    e.user, e.adjust ? 'Correction' : ''
+                ].map(cell).join(',')));
+                const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = from === '2000-01-01' ? `egg-app-all-to-${to}.csv` : `egg-app-${from}-to-${to}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+                toast(`Exported ${rows.length} entries`);
+            } catch (err) {
+                showError(err);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // ---------- Prices ----------
+        function renderPriceEditor() {
+            $('priceEditList').innerHTML = prices.length ? prices.map(p => `<div class="price-edit-row">
+                <b class="num">${fmtPrice(p)}</b>
+                <button class="icon-btn" data-remove-price="${p}" aria-label="Remove ${fmtPrice(p)}"><svg class="i"><use href="#i-trash"/></svg></button>
+            </div>`).join('') : '<div class="empty">No prices yet</div>';
+        }
+        function savePrices(list) {
+            const clean = [...new Set(list.map(p => Math.round(p * 100) / 100))].sort((a, b) => a - b);
+            settingsRef.set({ prices: clean, updatedAt: serverTime() }, { merge: true }).catch(showError);
+        }
+        $('priceEditList').addEventListener('click', e => {
+            const b = e.target.closest('[data-remove-price]');
+            if (!b) return;
+            const p = Number(b.dataset.removePrice);
+            confirmSheet({
+                title: `Remove ${fmtPrice(p)}?`,
+                text: 'Sales already recorded at this price are kept.',
+                ok: 'Remove',
+                onOk: () => savePrices(prices.filter(x => x !== p))
+            });
+        });
+        $('addPrice').addEventListener('click', () => {
+            const v = parseNum($('newPrice').value);
+            if (!isFinite(v) || v <= 0 || v >= 100) { toast('Enter a price like 6.00', true); return; }
+            if (prices.length >= 20) { toast('That’s a lot of prices. Remove one first.', true); return; }
+            savePrices([...prices, v]);
+            $('newPrice').value = '';
+            toast(`Added ${fmtPrice(v)}`);
+        });
+
+        // ---------- Day rollover (app left open past midnight) ----------
+        function checkDay() {
+            const t = ymd(new Date());
+            if (t !== today) { today = t; subscribeRecent(); setRecordDay(recordDay); render(); }
+        }
+        setInterval(checkDay, 30000);
+        // Coming back to the app always lands on today, so eggs never go to a past day by accident
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) return;
+            checkDay();
+            if (recordDay) setRecordDay(null);
+        });
+
+        // ---------- Start ----------
+        if (notConfigured) $('setupBanner').classList.remove('hidden');
+        if (me) showApp(); else showPick();
+        render();
+        renderPriceEditor();
+
+        // Silent anonymous sign-in: no login screen, but the database only answers this app.
+        // The sign-in is remembered, so each phone keeps the same anonymous account.
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                subscribeRecent();
+                subscribeSettings();
+            } else if (!notConfigured) {
+                auth.signInAnonymously().catch(showError);
+            }
+        });
+
+        if ('serviceWorker' in navigator && !isLocalTestCopy) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+        } else if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister()));
+        }
+    </script>
+</body>
+</html>

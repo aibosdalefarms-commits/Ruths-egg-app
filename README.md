@@ -1,0 +1,68 @@
+# Egg App
+
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.0.
+
+**Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
+
+## What it does
+
+- **Who's this?**: pick Nate or Ruth once per phone. It's remembered until you tap **Switch user**, and every entry is stamped with that name.
+- **Record tab**: today's egg total with a Nate/Ruth breakout. Use the **+1 / +6 / +12 / +42** buttons (42 = a full tray) and **Undo last**.
+  - The **‹ ›** arrows beside the date step back to past days, so missed collections can be added with the same buttons.
+  - A past day shows in egg-brown with a **Back to today** button.
+  - The app always returns to today when it's reopened or comes back from the background.
+- **Sales tab**: last week and this week, in dozens and dollars. Weeks run Sunday to Saturday.
+  - **Customers**: one row per price with **+6** (half dozen) and **+12** (dozen). Tap a row's count to correct this week's total for that price.
+  - **Farm**: free eggs sent to the family farm, with **+6 / +12 / +42**. Tap the total to correct it. Farm eggs aren't counted in dollars.
+- **Menu**:
+  - **History**: every entry by day. Tap one to edit or delete it, or tap **Add** to backfill a missed day.
+  - **Export**: CSV for a date range.
+  - **Prices**: the price list shown on the Customers tab.
+  - **Switch user**
+
+## How the data works
+
+Every tap saves one small entry instead of overwriting a total, so both phones can tap at the same time without losing anything. Totals are added up from the entries.
+
+| Collection | Contents |
+|---|---|
+| `entries` | `type` (`collected` / `sold` / `farm`), `eggs` (whole eggs: +6 = half dozen), `price` (per dozen, sales only), `user`, `date` (YYYY-MM-DD), `createdAt`, optional `adjust: true` for corrections |
+| `settings/main` | `prices`: the price list |
+
+A correction (tapping a count and setting a new total) saves the difference as an entry marked `adjust`, so the history shows exactly what changed.
+
+## Tech stack
+
+- **Frontend:** single-file vanilla HTML/CSS/JS ([index.html](index.html)) with no build step, the same approach as Bosdale Receipts
+- **Auth:** Firebase anonymous sign-in, done silently in the background. There are no passwords. The database only answers requests from the app.
+- **Database:** Cloud Firestore (region `northamerica-northeast2`, Toronto)
+- **Hosting:** Firebase Hosting
+- **Offline:** service worker ([sw.js](sw.js)). Network-first for the app, cache-first for icons, fonts and libraries.
+
+## Deploying changes
+
+```bash
+firebase deploy
+```
+
+Bump `CACHE_NAME` in [sw.js](sw.js) and the version label in [index.html](index.html) with each release so installed apps pick up the update.
+
+## Key files
+
+| File | Purpose |
+|---|---|
+| `index.html` | The entire app (UI + logic) |
+| `sw.js` | Service worker |
+| `manifest.json` | PWA install manifest |
+| `icon-*.png`, `apple-touch-icon.png`, `favicon-48.png` | App icons (original artwork in `branding/`) |
+| `firestore.rules` | Database security rules |
+| `firebase.json` | Hosting, rules and emulator config |
+| `SETUP-GUIDE.md` | First-time Firebase setup and installing on the phones |
+| `docs/testing.md` | Testing on this computer with the private test copy |
+| `tools/serve.js` | Tiny local web server for testing |
+
+Notes (`*.md`), `docs/`, `branding/` and `tools/` are not published to the website.
+
+## Changing the people
+
+The names are in two places and must match: `USERS` near the top of the script in `index.html`, and `d.user in [...]` in `firestore.rules`.
