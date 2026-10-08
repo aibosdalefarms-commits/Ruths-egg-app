@@ -30,6 +30,9 @@
             --grass-tint: #EAF3E3;
             --egg: #B87445;
             --egg-tint: #F8EEE6;
+            --grass-bar: #A9CF8A;
+            --gold: #B88A1E;
+            --gold-tint: #FAF3DF;
             --ink: #23272B;
             --steel: #646970;
             --steel-soft: #A3A7AD;
@@ -168,13 +171,47 @@
         #tabRecord.past .add-btn b { color: var(--egg); }
         #tabRecord.past .add-btn:active { background: var(--egg-tint); border-color: var(--egg); }
 
-        .add-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 220px; }
+        .add-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .add-btn {
             background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-lg);
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-            box-shadow: 0 1px 2px var(--shadow); min-height: 96px;
+            box-shadow: 0 1px 2px var(--shadow); min-height: 78px;
         }
-        .add-btn b { font-family: var(--font-display); font-weight: 700; font-size: 44px; line-height: 1; color: var(--comb); }
+        .add-btn b { font-family: var(--font-display); font-weight: 700; font-size: 32px; line-height: 1; color: var(--comb); }
+        .add-grid .add-btn span { font-size: 13px; }
+        .add-btn.feature { background: var(--comb-tint); border-color: var(--comb); }
+        #tabRecord.past .add-btn.feature { background: var(--egg-tint); border-color: var(--egg); }
+
+        /* Editable total */
+        .total-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0 8px; border-radius: var(--r-md); }
+        .total-btn:active { background: var(--steel-tint); }
+        .total-btn .big { margin-top: 0; }
+        .total-btn .i { width: 20px; height: 20px; color: var(--steel); }
+        .lay { color: var(--grass); }
+
+        /* Last 7 days chart */
+        .week-chart { flex: 1; min-height: 136px; max-height: 240px; padding: 12px 14px 10px; display: flex; flex-direction: column; }
+        .chart-head { display: flex; justify-content: space-between; align-items: baseline; }
+        .chart-head .muted { font-size: 14px; }
+        .chart-head b { font-family: var(--font-display); font-size: 18px; color: var(--ink); margin-left: 4px; }
+        .bars { flex: 1; min-height: 64px; display: flex; gap: 8px; margin-top: 8px; }
+        .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; min-width: 0; border-radius: 6px; }
+        .bar-col:active { background: var(--steel-tint); }
+        .bar-val { font-size: 12px; font-weight: 600; color: var(--steel); font-variant-numeric: tabular-nums; }
+        .bar { width: 100%; border-radius: 5px 5px 0 0; background: var(--grass-bar); min-height: 3px; }
+        .bar.nodata { background: var(--line-strong); }
+        .bar.sel { background: var(--gold); }
+        .bar-col.sel .bar-val { color: var(--gold); }
+        .bar-days { display: flex; gap: 8px; margin-top: 4px; border-top: 1px solid var(--line); padding-top: 4px; }
+        .bar-days span { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: var(--steel); }
+        .bar-days span.sel { color: var(--gold); }
+
+        /* Flock screen */
+        .flock-card { padding: 18px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .flock-big { font-family: var(--font-display); font-weight: 700; font-size: 52px; line-height: 1.05; margin-top: 4px; }
+        .flock-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 14px; }
+        .flock-steps button { height: 60px; border-radius: var(--r-md); background: var(--steel-tint); font-size: 30px; font-weight: 700; }
+        .flock-steps button:active { background: var(--line-strong); }
         .add-btn span { font-size: 14px; color: var(--steel); font-weight: 600; }
         .add-btn:active { background: var(--comb-tint); border-color: var(--comb); transform: scale(0.98); }
         .add-btn.flash { animation: flash 0.35s ease-out; }
@@ -324,9 +361,9 @@
         @media (max-height: 700px) {
             .today .big { font-size: 56px; }
             .split b { font-size: 26px; }
-            .add-btn b { font-size: 38px; }
-            .add-btn { min-height: 80px; }
-            .add-grid { min-height: 172px; }
+            .add-btn { min-height: 68px; }
+            .add-btn b { font-size: 28px; }
+            .week-chart { min-height: 120px; padding: 10px 12px 8px; }
             .today { padding: 12px 14px 10px; }
             .split { margin-top: 10px; }
             .split > div { padding-top: 8px; }
@@ -353,6 +390,7 @@
             <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
             <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
             <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+            <symbol id="i-barn" viewBox="0 0 24 24"><path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"/><path d="M9 21v-6h6v6"/></symbol>
             <symbol id="i-swap" viewBox="0 0 24 24"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></symbol>
         </defs>
     </svg>
@@ -374,8 +412,7 @@
         <header class="topbar">
             <img src="/icon-192.png" alt="">
             <div class="title">Egg App</div>
-            <button class="user-chip" id="userChip"><svg class="i"><use href="#i-user"/></svg><span id="userName"></span></button>
-            <button class="icon-btn" id="menuBtn" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+            <button class="user-chip" id="userChip" aria-label="Menu"><span id="userName"></span><svg class="i"><use href="#i-menu"/></svg></button>
         </header>
 
         <main class="main">
@@ -386,16 +423,21 @@
                     <button class="day-arrow" id="dayPrev" aria-label="Previous day"><svg class="i"><use href="#i-chev-left"/></svg></button>
                     <button class="day-arrow" id="dayNext" aria-label="Next day"><svg class="i"><use href="#i-chev"/></svg></button>
                     <div class="label" id="todayLabel">Today</div>
-                    <div class="big num" id="todayTotal">0</div>
-                    <div class="unit">eggs collected</div>
+                    <button class="total-btn" id="totalBtn" aria-label="Edit total"><span class="big num" id="todayTotal">0</span><svg class="i"><use href="#i-pencil"/></svg></button>
+                    <div class="unit">eggs collected<span id="layRate"></span></div>
                     <div class="split" id="todaySplit"></div>
                     <div class="yday hidden" id="ydayLine"><button class="back-today" id="backToday">Back to today</button></div>
                 </div>
+                <div class="card week-chart">
+                    <div class="chart-head"><span class="label">Last 7 days</span><span class="muted" id="weekTotal"></span></div>
+                    <div class="bars" id="bars"></div>
+                    <div class="bar-days" id="barDays"></div>
+                </div>
                 <div class="add-grid">
                     <button class="add-btn" data-collect="1"><b>+1</b><span>egg</span></button>
-                    <button class="add-btn" data-collect="6"><b>+6</b><span>half dozen</span></button>
+                    <button class="add-btn" data-collect="6"><b>+6</b><span>half</span></button>
                     <button class="add-btn" data-collect="12"><b>+12</b><span>dozen</span></button>
-                    <button class="add-btn" data-collect="42"><b>+42</b><span>full tray</span></button>
+                    <button class="add-btn feature" data-collect="42"><b>+42</b><span>tray</span></button>
                 </div>
                 <div class="undo-row"><button class="text-btn" data-undo="collected"><svg class="i"><use href="#i-undo"/></svg>Undo last</button></div>
             </section>
@@ -458,23 +500,24 @@
         <div class="menu-list">
             <button class="menu-item" data-open="history"><svg class="i"><use href="#i-clock"/></svg>History</button>
             <button class="menu-item" data-open="export"><svg class="i"><use href="#i-download"/></svg>Export</button>
+            <button class="menu-item" data-open="flock"><svg class="i"><use href="#i-barn"/></svg>Flock<span class="end" id="menuFlock"></span></button>
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.0</div>
+        <div class="version">Egg App v1.1</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
     <div id="countSheet" class="sheet hidden">
         <div class="grab"></div>
         <h2 id="countTitle"></h2>
-        <p class="sub">Set the total for this week. The difference is saved as a correction.</p>
+        <p class="sub" id="countSub"></p>
         <div class="stepper">
-            <button data-step="-0.5" aria-label="Less">−</button>
+            <button data-step="-1" aria-label="Less">−</button>
             <input class="input num" id="countInput" inputmode="decimal" autocomplete="off">
-            <button data-step="0.5" aria-label="More">+</button>
+            <button data-step="1" aria-label="More">+</button>
         </div>
-        <div class="stepper-unit">dozen</div>
+        <div class="stepper-unit" id="countUnit"></div>
         <div class="sheet-actions">
             <button class="btn btn-primary btn-block" id="countSave">Save</button>
             <button class="btn btn-quiet btn-block" data-close>Cancel</button>
@@ -581,6 +624,35 @@
         </div></div>
     </div>
 
+    <!-- Flock -->
+    <div id="flockScreen" class="screen hidden">
+        <div class="screen-head">
+            <button class="icon-btn" data-close aria-label="Back"><svg class="i"><use href="#i-back"/></svg></button>
+            <h2>Flock</h2>
+        </div>
+        <div class="screen-body"><div class="screen-inner">
+            <div class="card flock-card">
+                <div class="label">Eggs from this flock</div>
+                <div class="flock-big num" id="flockEggs">–</div>
+                <div class="muted num" id="flockSince"></div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+                <label for="flockStart">Flock start date</label>
+                <input type="date" class="input" id="flockStart">
+            </div>
+            <div class="card flock-card">
+                <div class="label">Current flock</div>
+                <div class="flock-big num" id="flockSize"></div>
+                <div class="muted">hens</div>
+                <div class="flock-steps">
+                    <button id="flockMinus" aria-label="One less hen">−</button>
+                    <button id="flockPlus" aria-label="One more hen">+</button>
+                </div>
+            </div>
+            <p class="note">The flock size sets the lay rate on the Record tab. Each change is saved with today's date, so past days keep the flock size they had.</p>
+        </div></div>
+    </div>
+
     <div id="toast" class="toast"></div>
 
     <!-- Firebase (compat SDK, same as Bosdale Receipts) -->
@@ -592,6 +664,7 @@
         // ---------- Settings ----------
         const USERS = ['Nate', 'Ruth'];
         const DEFAULT_PRICES = [4, 4.5, 5, 5.5];
+        const DEFAULT_FLOCK = 100;
         const USER_KEY = 'eggapp.user';
 
         // From Ruth's Firebase project: Project settings → General → Your apps → Web app → Config
@@ -667,6 +740,8 @@
         let today = ymd(new Date());
         let recent = [];          // entries from the start of last week onward (live)
         let prices = DEFAULT_PRICES.slice();
+        let flockStart = null;    // 'YYYY-MM-DD' or null
+        let flockLog = [];        // [{ date, size }] sorted by date: the flock size from that day on
         let salesPane = 'customers';
         let recordDay = null;     // a past day being viewed on the Record tab; null = today
         let dayEntries = null;    // live entries for that day when it's older than `recent` covers
@@ -693,10 +768,17 @@
 
         function subscribeSettings() {
             settingsRef.onSnapshot(doc => {
-                const p = doc.exists && Array.isArray(doc.data().prices) ? doc.data().prices : DEFAULT_PRICES;
+                const d = doc.exists ? doc.data() : {};
+                const p = Array.isArray(d.prices) ? d.prices : DEFAULT_PRICES;
                 prices = p.filter(n => typeof n === 'number').sort((a, b) => a - b);
+                const startChanged = (d.flockStart || null) !== flockStart;
+                flockStart = typeof d.flockStart === 'string' ? d.flockStart : null;
+                flockLog = (Array.isArray(d.flockLog) ? d.flockLog : [])
+                    .filter(f => f && typeof f.date === 'string' && typeof f.size === 'number')
+                    .sort((a, b) => a.date.localeCompare(b.date));
                 render();
                 renderPriceEditor();
+                renderFlock(startChanged);
             }, showError);
         }
 
@@ -752,9 +834,10 @@
             recordDay = d && d < today ? d : null;
             if (unsubDay) { unsubDay(); unsubDay = null; }
             dayEntries = null;
-            // `recent` only reaches back to the start of last week; older days get their own live query
-            if (recordDay && (!recentFrom || recordDay < recentFrom)) {
-                unsubDay = entriesRef.where('date', '==', recordDay).onSnapshot(snap => {
+            // `recent` only reaches back to the start of last week; older days get their own live
+            // query covering the 7-day chart window that ends on that day
+            if (recordDay && (!recentFrom || addDays(recordDay, -6) < recentFrom)) {
+                unsubDay = entriesRef.where('date', '>=', addDays(recordDay, -6)).where('date', '<=', recordDay).onSnapshot(snap => {
                     dayEntries = snap.docs.map(docToEntry);
                     renderRecord();
                 }, showError);
@@ -771,12 +854,91 @@
             $('todayLabel').textContent = !recordDay ? 'Today · ' + shortDay(today)
                 : day === addDays(today, -1) ? 'Yesterday · ' + shortDay(day)
                 : shortDay(day);
-            $('todayTotal').textContent = loading ? '…' : sum(dayList, e => e.eggs);
+            const total = sum(dayList, e => e.eggs);
+            const flock = flockSizeOn(day);
+            $('todayTotal').textContent = loading ? '…' : total;
+            $('layRate').innerHTML = !loading && flock > 0 && dayList.length
+                ? ` · <span class="lay">${Math.round(total / flock * 100)}% laying</span>` : '';
             $('todaySplit').innerHTML = USERS.map(u =>
                 `<div><span>${esc(u)}</span><b class="num">${loading ? '…' : sum(dayList.filter(e => e.user === u), e => e.eggs)}</b></div>`
             ).join('');
             $('ydayLine').classList.toggle('hidden', !recordDay);
+            renderChart();
         }
+
+        // Last 7 days: ends today, or on the day being viewed if that's further back
+        function renderChart() {
+            const day = viewDay();
+            const end = day >= addDays(today, -6) ? today : day;
+            const days = Array.from({ length: 7 }, (_, i) => addDays(end, i - 6));
+            const collected = recordSource().filter(e => e.type === 'collected');
+            const loading = dayLoading();
+            const totals = days.map(d => sum(collected.filter(e => e.date === d), e => e.eggs));
+            const logged = days.map(d => collected.some(e => e.date === d));
+            const top = Math.max(flockSizeOn(end), ...totals, 1);
+            $('bars').innerHTML = days.map((d, i) => {
+                const sel = d === day ? ' sel' : '';
+                const pct = logged[i] && !loading ? Math.max(3, Math.round(Math.max(totals[i], 0) / top * 100)) : 0;
+                return `<button class="bar-col${sel}" data-day="${d}" aria-label="${esc(shortDay(d))}: ${totals[i]} eggs">
+                    <span class="bar-val">${logged[i] && !loading ? totals[i] : ''}</span>
+                    <span class="bar${sel}${logged[i] ? '' : ' nodata'}" style="height:${pct ? pct + '%' : '3px'}"></span>
+                </button>`;
+            }).join('');
+            $('barDays').innerHTML = days.map(d =>
+                `<span class="${d === day ? 'sel' : ''}">${esc(parseYmd(d).toLocaleDateString([], { weekday: 'short' }).slice(0, 2))}</span>`
+            ).join('');
+            // Sunday–Saturday week containing the day being viewed
+            const ws = weekStart(day);
+            const weekEggs = sum(collected.filter(e => e.date >= ws && e.date <= addDays(ws, 6)), e => e.eggs);
+            const weekName = ws === weekStart(today) ? 'This week' : 'Week of ' + fmtDay(ws, { month: 'short', day: 'numeric' });
+            $('weekTotal').innerHTML = `${esc(weekName)}<b class="num">${loading ? '…' : weekEggs}</b>`;
+        }
+        $('bars').addEventListener('click', e => {
+            const b = e.target.closest('[data-day]');
+            if (b) setRecordDay(b.dataset.day);
+        });
+
+        // ---------- Flock ----------
+        function flockSizeOn(date) {
+            let size = flockLog.length ? flockLog[0].size : DEFAULT_FLOCK;
+            for (const f of flockLog) if (f.date <= date) size = f.size;
+            return size;
+        }
+
+        // Correct a day's collected total. Raising adds eggs for whoever is using the phone;
+        // lowering takes them off whoever logged more that day (then the other person).
+        function correctCollected(day, newTotal) {
+            const list = recordSource().filter(e => e.type === 'collected' && e.date === day);
+            const diff = newTotal - sum(list, e => e.eggs);
+            if (!diff) return;
+            const batch = db.batch();
+            const base = { type: 'collected', date: day, adjust: true, createdAt: serverTime() };
+            if (diff > 0) {
+                batch.set(entriesRef.doc(), { ...base, eggs: diff, user: me });
+            } else {
+                let remove = -diff;
+                const byUser = USERS.map(u => ({ u, n: sum(list.filter(e => e.user === u), e => e.eggs) })).sort((a, b) => b.n - a.n);
+                for (const { u, n } of byUser) {
+                    const take = Math.min(remove, Math.max(n, 0));
+                    if (take > 0) { batch.set(entriesRef.doc(), { ...base, eggs: -take, user: u }); remove -= take; }
+                }
+                if (remove > 0) batch.set(entriesRef.doc(), { ...base, eggs: -remove, user: byUser[0].u });
+            }
+            buzz();
+            batch.commit().catch(showError);
+        }
+
+        $('totalBtn').addEventListener('click', () => {
+            if (dayLoading()) return;
+            const day = viewDay();
+            openCountSheet({
+                title: recordDay ? `Eggs collected · ${shortDay(day)}` : 'Eggs collected today',
+                sub: 'Set the right total. Eggs taken off come from whoever logged more that day.',
+                unit: 'eggs',
+                eggs: sum(recordSource().filter(e => e.type === 'collected' && e.date === day), e => e.eggs),
+                onSave: n => { correctCollected(day, n); toast(`Set to ${n} eggs`); }
+            });
+        });
 
         $('dayPrev').addEventListener('click', () => setRecordDay(addDays(viewDay(), -1)));
         $('dayNext').addEventListener('click', () => setRecordDay(addDays(viewDay(), 1)));
@@ -973,20 +1135,33 @@
 
         // ---------- Count correction ----------
         let countCtx = null;
+        // ctx: { title, eggs, unit: 'dozen' (default) | 'eggs', sub?, onSave?(eggs), type?, price? }
         function openCountSheet(ctx) {
             countCtx = ctx;
+            const inEggs = ctx.unit === 'eggs';
             $('countTitle').textContent = ctx.title;
-            $('countInput').value = fmtDz(ctx.eggs);
+            $('countSub').textContent = ctx.sub || 'Set the total for this week. The difference is saved as a correction.';
+            $('countUnit').textContent = inEggs ? 'eggs' : 'dozen';
+            $('countInput').value = inEggs ? ctx.eggs : fmtDz(ctx.eggs);
             openLayer($('countSheet'));
         }
         $('countSheet').addEventListener('click', e => {
             const b = e.target.closest('[data-step]');
             if (!b) return;
             const v = parseNum($('countInput').value) || 0;
-            $('countInput').value = Math.max(0, Math.round((v + Number(b.dataset.step)) * 2) / 2).toFixed(1);
+            const dir = Number(b.dataset.step);
+            $('countInput').value = countCtx.unit === 'eggs'
+                ? Math.max(0, Math.round(v) + dir)
+                : Math.max(0, Math.round((v + dir * 0.5) * 2) / 2).toFixed(1);
         });
         $('countSave').addEventListener('click', () => {
             const v = parseNum($('countInput').value);
+            if (countCtx.unit === 'eggs') {
+                if (!isFinite(v) || v < 0 || v > 9999) { toast('Enter a number of eggs', true); return; }
+                closeLayers(1);
+                countCtx.onSave(Math.round(v));
+                return;
+            }
             if (!isFinite(v) || v < 0 || v > 999) { toast('Enter a number of dozen, like 3.5', true); return; }
             const diff = Math.round(v * 12) - countCtx.eggs;
             closeLayers(1);
@@ -997,7 +1172,6 @@
 
         // ---------- Menu ----------
         const openMenu = () => openLayer($('menuSheet'));
-        $('menuBtn').addEventListener('click', openMenu);
         $('userChip').addEventListener('click', openMenu);
         $('menuSheet').addEventListener('click', e => {
             const b = e.target.closest('[data-open]');
@@ -1006,6 +1180,64 @@
             if (b.dataset.open === 'history') openHistory();
             if (b.dataset.open === 'export') openExport();
             if (b.dataset.open === 'prices') openLayer($('pricesScreen'), { replace: true });
+            if (b.dataset.open === 'flock') openFlock();
+        });
+
+        // ---------- Flock screen ----------
+        let flockDraft = null, flockTimer = null, flockOpen = false;
+        function openFlock() {
+            flockOpen = true;
+            renderFlock(true);
+            openLayer($('flockScreen'), { replace: true, onClose: () => { flockOpen = false; } });
+        }
+        function renderFlock(reloadTotal) {
+            const size = flockDraft ?? flockSizeOn(today);
+            $('menuFlock').textContent = `${size} hens`;
+            if (!flockOpen) return;
+            $('flockSize').textContent = size;
+            if (document.activeElement !== $('flockStart')) $('flockStart').value = flockStart || '';
+            $('flockStart').max = today;
+            if (reloadTotal) loadFlockTotal();
+        }
+        async function loadFlockTotal() {
+            if (!flockStart) {
+                $('flockEggs').textContent = '–';
+                $('flockSince').textContent = 'Set the flock start date to see the total';
+                return;
+            }
+            $('flockEggs').textContent = '…';
+            try {
+                const snap = await entriesRef.where('date', '>=', flockStart).get();
+                const eggs = sum(snap.docs.map(d => d.data()).filter(e => e.type === 'collected' && e.date <= today), e => e.eggs);
+                const days = Math.round((parseYmd(today) - parseYmd(flockStart)) / 86400000) + 1;
+                $('flockEggs').textContent = eggs.toLocaleString();
+                $('flockSince').textContent = `Since ${fmtDay(flockStart, { month: 'short', day: 'numeric', year: 'numeric' })} · ${days} day${days === 1 ? '' : 's'} · avg ${Math.round(eggs / Math.max(days, 1))} a day`;
+            } catch (err) { showError(err); }
+        }
+        function stepFlock(dir) {
+            flockDraft = Math.max(0, Math.min(9999, (flockDraft ?? flockSizeOn(today)) + dir));
+            renderFlock(false);
+            render();
+            clearTimeout(flockTimer);
+            // Wait for a pause in tapping, then save today's size once
+            flockTimer = setTimeout(() => {
+                const size = flockDraft;
+                const log = flockLog.filter(f => f.date !== today);
+                // Keep the size the flock had before today for past days' lay rates
+                if (!log.length) log.push({ date: '2000-01-01', size: flockSizeOn(addDays(today, -1)) });
+                log.push({ date: today, size });
+                log.sort((a, b) => a.date.localeCompare(b.date));
+                settingsRef.set({ flockLog: log.slice(-500), updatedAt: serverTime() }, { merge: true })
+                    .then(() => { flockDraft = null; })
+                    .catch(err => { flockDraft = null; showError(err); renderFlock(false); });
+            }, 700);
+        }
+        $('flockMinus').addEventListener('click', () => stepFlock(-1));
+        $('flockPlus').addEventListener('click', () => stepFlock(1));
+        $('flockStart').addEventListener('change', () => {
+            const v = $('flockStart').value;
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(v) || v > today) return;
+            settingsRef.set({ flockStart: v, updatedAt: serverTime() }, { merge: true }).catch(showError);
         });
         $('switchUser').addEventListener('click', () => {
             closeLayers(1);

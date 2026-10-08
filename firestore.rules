@@ -32,13 +32,17 @@ service cloud.firestore {
       allow delete: if signedIn();
     }
 
-    // Shared settings: the price list
+    // Shared settings: the price list and the flock (start date + size history)
     match /settings/main {
       allow read: if signedIn();
-      allow write: if signedIn()
-        && request.resource.data.keys().hasOnly(['prices', 'updatedAt'])
-        && request.resource.data.prices is list
-        && request.resource.data.prices.size() <= 20;
+      allow write: if signedIn() && validSettings(request.resource.data);
+    }
+
+    function validSettings(d) {
+      return d.keys().hasOnly(['prices', 'flockStart', 'flockLog', 'updatedAt'])
+        && (!('prices' in d) || (d.prices is list && d.prices.size() <= 20))
+        && (!('flockStart' in d) || (d.flockStart is string && d.flockStart.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+        && (!('flockLog' in d) || (d.flockLog is list && d.flockLog.size() <= 500));
     }
   }
 }
