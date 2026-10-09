@@ -1,6 +1,6 @@
 # Egg App
 
-Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.2.
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.3.
 
 **Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
 
@@ -16,8 +16,13 @@ Daily egg collection and weekly sales for our backyard flock. It's a PWA on Fire
 - **Sales tab**: last week and this week, in dozens and dollars. Weeks run Sunday to Saturday.
   - **Customers**: one row per price with **+6** (half dozen) and **+12** (dozen). Tap a row's count to correct this week's total for that price.
   - **Farm**: free eggs sent to the family farm, with **+6 / +12 / +42**. Tap the total to correct it. Farm eggs aren't counted in dollars.
+- **Stats tab** (read only, scrolls): everything counts from the flock start date.
+  - Totals: eggs collected, dozens sold (+ farm), dollars earned, average price per dozen.
+  - A ring of where the eggs go (sold vs farm).
+  - Charts for eggs collected, lay rate, dozens sold (sold + farm stacked), earnings and average price per dozen. **12 weeks** shows Sunday–Saturday weeks; **All** shows each month as its average per week so part-months compare fairly. Tap a bar to see its numbers.
+  - Records: best day, best week, top lay rate, and how far the eggs would stretch end to end.
 - **Menu** (tap your name at the top right):
-  - **History**: one card per day (today and yesterday first, then **Load more** for 7 more days) showing eggs collected, dozens sold with dollars, and dozens to the farm. Tap a day to set its totals; the differences are saved as corrections. Empty days are listed too, so a missed day can be filled in.
+  - **History**: one card per day (today and yesterday first, then **Load more** for 7 more days) showing eggs collected, dozens sold with dollars, and dozens to the farm. Tap a day to set its totals; the differences are saved as corrections. Empty days are listed too, so a missed day can be filled in. **Go to date** jumps to any day (with the six days before it).
   - **Export**: CSV for a date range.
   - **Flock**: total eggs since the flock start date, the start date itself, and the current number of hens with − / + buttons. Each size change is saved with its date, so past days keep the right lay rate.
   - **Prices**: the price list shown on the Customers tab.

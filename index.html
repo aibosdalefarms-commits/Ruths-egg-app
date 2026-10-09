@@ -133,7 +133,7 @@
         .tabbar {
             flex: none; height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
             padding-bottom: env(safe-area-inset-bottom, 0px);
-            display: grid; grid-template-columns: 1fr 1fr;
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
             background: var(--surface); border-top: 1px solid var(--line);
         }
         .tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--steel); font-weight: 600; font-size: 13px; }
@@ -211,6 +211,44 @@
         .flock-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 14px; }
         .flock-steps button { height: 60px; border-radius: var(--r-md); background: var(--steel-tint); font-size: 30px; font-weight: 700; }
         .flock-steps button:active { background: var(--line-strong); }
+
+        /* Stats tab */
+        :root { --sold: #3F7D22; --farm: #D4A72C; --bar: #5E9A3A; }
+        #tabStats { min-height: 0; }
+        .stat-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 12px 14px; }
+        .stat-tile b { display: block; font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.1; margin-top: 2px; }
+        .stat-tile small { font-size: 13px; color: var(--steel); }
+        .sc-card { padding: 12px 14px 10px; }
+        .sc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+        .sc-legend { display: flex; gap: 10px; font-size: 12px; color: var(--steel); font-weight: 600; }
+        .sc-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+        .sc-plot { position: relative; height: 128px; margin-top: 10px; border-bottom: 1px solid var(--line-strong); }
+        .sc-max { position: absolute; left: 0; right: 0; top: 0; border-top: 1px dashed var(--line); font-size: 11px; color: var(--steel-soft); line-height: 1; padding-top: 2px; pointer-events: none; }
+        .sc-cols { position: absolute; inset: 0; display: flex; gap: 4px; }
+        .sc-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; position: relative; border-radius: 6px 6px 0 0; }
+        .sc-col.sel { background: var(--steel-tint); }
+        .sc-stack { display: flex; flex-direction: column-reverse; gap: 2px; margin: 0 1px; }
+        .sc-seg { border-radius: 2px; min-height: 2px; }
+        .sc-stack .sc-seg:last-child { border-radius: 4px 4px 2px 2px; }
+        .sc-col.partial .sc-seg { opacity: 0.55; }
+        .sc-val { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 700; color: var(--ink); white-space: nowrap; pointer-events: none; }
+        .sc-dot { position: absolute; left: 50%; width: 9px; height: 9px; border-radius: 50%; background: var(--sold); box-shadow: 0 0 0 2px var(--surface); transform: translate(-50%, 50%); pointer-events: none; }
+        .sc-dot.on { width: 12px; height: 12px; }
+        .sc-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+        .sc-x { display: flex; gap: 4px; margin-top: 4px; }
+        .sc-x span { flex: 1; min-width: 0; text-align: center; font-size: 11px; color: var(--steel); white-space: nowrap; overflow: visible; }
+        .sc-detail { margin-top: 8px; font-size: 14px; color: var(--steel); font-variant-numeric: tabular-nums; }
+        .sc-detail b { color: var(--ink); }
+        .ring-row { display: flex; align-items: center; gap: 18px; margin-top: 8px; }
+        .ring-row svg { flex: none; }
+        .ring-legend { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+        .ring-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+        .records { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        .records small { display: block; font-size: 12px; color: var(--steel); font-weight: 600; }
+        .records b { font-family: var(--font-display); font-size: 18px; }
+        .date-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        .hist-banner { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: var(--r-md); background: var(--gold-tint); color: var(--ink); font-weight: 600; }
         .add-btn span { font-size: 14px; color: var(--steel); font-weight: 600; }
         .add-btn:active { background: var(--comb-tint); border-color: var(--comb); transform: scale(0.98); }
         .add-btn.flash { animation: flash 0.35s ease-out; }
@@ -396,6 +434,8 @@
             <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
             <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
             <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+            <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+            <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
             <symbol id="i-barn" viewBox="0 0 24 24"><path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"/><path d="M9 21v-6h6v6"/></symbol>
             <symbol id="i-swap" viewBox="0 0 24 24"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></symbol>
         </defs>
@@ -488,11 +528,35 @@
                     <div class="undo-row" style="margin-top:6px"><button class="text-btn" data-undo="farm"><svg class="i"><use href="#i-undo"/></svg>Undo last</button></div>
                 </div>
             </section>
+
+            <!-- Stats (read only) -->
+            <section class="tab hidden" id="tabStats">
+                <div class="seg" id="statsPeriod">
+                    <button class="active" data-period="weeks">12 weeks</button>
+                    <button data-period="months">All</button>
+                </div>
+                <div class="stat-tiles" id="statTiles"></div>
+                <div class="card sc-card">
+                    <div class="label">Where the eggs go</div>
+                    <div class="ring-row" id="ringRow"></div>
+                </div>
+                <div class="card sc-card" id="chartProd"></div>
+                <div class="card sc-card" id="chartLay"></div>
+                <div class="card sc-card" id="chartSold"></div>
+                <div class="card sc-card" id="chartEarn"></div>
+                <div class="card sc-card" id="chartPrice"></div>
+                <div class="card sc-card">
+                    <div class="label">Records</div>
+                    <div class="records" id="records"></div>
+                </div>
+                <p class="note" id="statsNote"></p>
+            </section>
         </main>
 
         <nav class="tabbar">
             <button class="active" data-tab="record"><svg class="i"><use href="#i-egg"/></svg>Record</button>
             <button data-tab="sales"><svg class="i"><use href="#i-dollar"/></svg>Sales</button>
+            <button data-tab="stats"><svg class="i"><use href="#i-chart"/></svg>Stats</button>
         </nav>
     </div>
 
@@ -508,7 +572,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.2</div>
+        <div class="version">Egg App v1.3</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -556,6 +620,8 @@
         <div class="screen-head">
             <button class="icon-btn" data-close aria-label="Back"><svg class="i"><use href="#i-back"/></svg></button>
             <h2>History</h2>
+            <button class="text-btn" id="historyFind"><svg class="i"><use href="#i-calendar"/></svg>Go to date</button>
+            <input type="date" id="historyDate" class="date-hidden" tabindex="-1" aria-hidden="true">
         </div>
         <div class="screen-body"><div class="screen-inner" id="historyList"></div></div>
     </div>
@@ -1057,6 +1123,9 @@
             document.querySelectorAll('.tabbar button').forEach(x => x.classList.toggle('active', x === b));
             $('tabRecord').classList.toggle('hidden', b.dataset.tab !== 'record');
             $('tabSales').classList.toggle('hidden', b.dataset.tab !== 'sales');
+            $('tabStats').classList.toggle('hidden', b.dataset.tab !== 'stats');
+            document.querySelector('.main').scrollTop = 0;
+            if (b.dataset.tab === 'stats') loadStats();
         });
         document.querySelector('#tabSales .seg').addEventListener('click', e => {
             const b = e.target.closest('[data-pane]');
@@ -1228,16 +1297,19 @@
 
         // ---------- History: one card per day with its totals ----------
         let histDays = 2, histUnsub = null, histEntries = [];
+        let histEnd = null;   // a date picked with "Go to date"; null = start from today
+        const histTop = () => histEnd || today;
         function openHistory() {
             histDays = 2;
+            histEnd = null;
             subscribeHistory();
             openLayer($('historyScreen'), { replace: true, onClose: () => { if (histUnsub) histUnsub(); histUnsub = null; } });
         }
         function subscribeHistory() {
             if (histUnsub) histUnsub();
-            const from = addDays(today, -(histDays - 1));
+            const to = histTop(), from = addDays(to, -(histDays - 1));
             $('historyList').innerHTML = '<div class="empty">Loading…</div>';
-            histUnsub = entriesRef.where('date', '>=', from).orderBy('date', 'desc').onSnapshot(snap => {
+            histUnsub = entriesRef.where('date', '>=', from).where('date', '<=', to).orderBy('date', 'desc').onSnapshot(snap => {
                 histEntries = snap.docs.map(docToEntry);
                 renderHistory();
             }, showError);
@@ -1253,8 +1325,11 @@
         }
         function renderHistory() {
             // Every day in the range gets a card, even empty ones, so a missed day can be filled in
-            const days = Array.from({ length: histDays }, (_, i) => addDays(today, -i));
-            $('historyList').innerHTML = days.map(d => {
+            const days = Array.from({ length: histDays }, (_, i) => addDays(histTop(), -i));
+            const banner = histEnd
+                ? `<div class="hist-banner"><span>From ${esc(fmtDay(histEnd, { month: 'short', day: 'numeric', year: 'numeric' }))} back</span><button class="text-btn" id="historyRecent">Back to recent</button></div>`
+                : '';
+            $('historyList').innerHTML = banner + days.map(d => {
                 const t = dayTotals(histEntries.filter(e => e.date === d));
                 const name = d === today ? 'Today · ' + shortDay(d) : d === addDays(today, -1) ? 'Yesterday · ' + shortDay(d) : fmtDay(d, { weekday: 'long', month: 'short', day: 'numeric', year: d.slice(0, 4) === today.slice(0, 4) ? undefined : 'numeric' });
                 return `<button class="card hist-day" data-day="${d}">
@@ -1269,8 +1344,25 @@
         }
         $('historyList').addEventListener('click', e => {
             if (e.target.closest('#historyMore')) { histDays += 7; subscribeHistory(); return; }
+            if (e.target.closest('#historyRecent')) { histEnd = null; histDays = 2; subscribeHistory(); return; }
             const card = e.target.closest('[data-day]');
             if (card) openDaySheet(card.dataset.day);
+        });
+
+        // Go to date: pick a day and show it with the six days before it
+        $('historyFind').addEventListener('click', () => {
+            const input = $('historyDate');
+            input.max = today;
+            input.value = histTop();
+            try { input.showPicker(); } catch (err) { input.focus(); input.click(); }
+        });
+        $('historyDate').addEventListener('change', () => {
+            const v = $('historyDate').value;
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return;
+            histEnd = v >= today ? null : v;
+            histDays = histEnd ? 7 : 2;
+            subscribeHistory();
+            $('historyScreen').querySelector('.screen-body').scrollTop = 0;
         });
 
         // ---------- Edit a day's totals ----------
@@ -1336,6 +1428,234 @@
             if (!writes) return;
             buzz();
             batch.commit().then(() => toast('Saved')).catch(showError);
+        });
+
+        // ---------- Stats (read only) ----------
+        // Everything counts from the flock start date. "12 weeks" shows Sunday–Saturday weeks;
+        // "All" shows one bar per month as the average per week, so part-months compare fairly.
+        let statsPeriod = 'weeks', statsEntries = null, statsFrom = null, statsSel = null, statsLoading = false;
+
+        async function loadStats() {
+            if (statsLoading) return;
+            statsLoading = true;
+            if (!statsEntries) $('statTiles').innerHTML = '<div class="empty" style="grid-column:1/-1">Loading…</div>';
+            try {
+                const snap = await (flockStart ? entriesRef.where('date', '>=', flockStart) : entriesRef).get();
+                statsEntries = snap.docs.map(d => d.data()).filter(e => e.date <= today);
+                statsFrom = flockStart || statsEntries.reduce((m, e) => (e.date < m ? e.date : m), today);
+                statsSel = null;
+                renderStats();
+            } catch (err) {
+                showError(err);
+            } finally {
+                statsLoading = false;
+            }
+        }
+
+        const daysIncl = (a, z) => Math.round((parseYmd(z) - parseYmd(a)) / 86400000) + 1;
+        const monthEnd = m => { const d = parseYmd(m + '-01'); d.setMonth(d.getMonth() + 1); d.setDate(0); return ymd(d); };
+        const prevMonth = m => { const d = parseYmd(m + '-01'); d.setMonth(d.getMonth() - 1); return ymd(d).slice(0, 7); };
+        function niceMax(v) {
+            if (!(v > 0)) return 0;
+            const p = 10 ** Math.floor(Math.log10(v)), n = v / p;
+            return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+        }
+
+        function statBuckets() {
+            const from = statsFrom, buckets = [];
+            if (statsPeriod === 'weeks') {
+                for (let ws = weekStart(today), i = 0; i < 12 && addDays(ws, 6) >= from; i++, ws = addDays(ws, -7)) {
+                    buckets.unshift({ start: ws, end: addDays(ws, 6) });
+                }
+            } else {
+                for (let m = today.slice(0, 7); ; m = prevMonth(m)) {
+                    buckets.unshift({ start: m + '-01', end: monthEnd(m) });
+                    if (m <= from.slice(0, 7)) break;
+                }
+            }
+            for (const b of buckets) {
+                const a = b.start < from ? from : b.start, z = b.end > today ? today : b.end;
+                const list = statsEntries.filter(e => e.date >= a && e.date <= z);
+                const days = daysIncl(a, z);
+                let hens = 0;
+                for (let d = a; d <= z; d = addDays(d, 1)) hens += flockSizeOn(d);
+                const eggs = sum(list.filter(e => e.type === 'collected'), e => e.eggs);
+                const sold = list.filter(e => e.type === 'sold');
+                const soldEggs = sum(sold, e => e.eggs), cents = sum(sold, valueCents);
+                const farmEggs = sum(list.filter(e => e.type === 'farm'), e => e.eggs);
+                const k = statsPeriod === 'months' ? 7 / days : 1;
+                Object.assign(b, {
+                    eggs: eggs * k, soldEggs: soldEggs * k, farmEggs: farmEggs * k, cents: cents * k,
+                    lay: hens && list.some(e => e.type === 'collected') ? eggs / hens : null,
+                    price: soldEggs > 0 ? cents / 100 / (soldEggs / 12) : null,
+                    partial: z < b.end || a > b.start,
+                    startsLate: a > b.start ? a : null
+                });
+            }
+            return buckets;
+        }
+
+        const bucketShort = b => statsPeriod === 'weeks'
+            ? fmtDay(b.start, { month: 'short', day: 'numeric' })
+            : parseYmd(b.start).toLocaleDateString([], { month: 'short' });
+        const bucketName = b => statsPeriod === 'weeks'
+            ? `Week of ${fmtDay(b.start, { month: 'short', day: 'numeric' })}${partialNote(b)}`
+            : `${parseYmd(b.start).toLocaleDateString([], { month: 'long', year: 'numeric' })}${partialNote(b)}`;
+        const partialNote = b => b.startsLate ? ` (from ${fmtDay(b.startsLate, { month: 'short', day: 'numeric' })})` : b.partial ? ' (so far)' : '';
+
+        function xLabels(buckets, nogap) {
+            const n = buckets.length, k = Math.ceil(n / 6);
+            return `<div class="sc-x"${nogap ? ' style="gap:0"' : ''}>${buckets.map((b, i) =>
+                `<span>${(n - 1 - i) % k === 0 ? esc(bucketShort(b)) : ''}</span>`).join('')}</div>`;
+        }
+
+        // Stacked bars. series: [{ get(b), color }]
+        function barChart(el, { title, legend, buckets, series, fmt, detail }) {
+            const totals = buckets.map(b => sum(series, s => Math.max(0, s.get(b) || 0)));
+            const top = niceMax(Math.max(0, ...totals));
+            const sel = statsSel ?? buckets.length - 1;
+            el.innerHTML = `<div class="sc-head"><span class="label">${title}</span>${legend || ''}</div>
+                <div class="sc-plot">${top ? `<div class="sc-max">${fmt(top)}</div>` : ''}
+                    <div class="sc-cols">${buckets.map((b, i) => {
+                        const h = top ? totals[i] / top * 100 : 0;
+                        return `<button class="sc-col${i === sel ? ' sel' : ''}${b.partial ? ' partial' : ''}" data-i="${i}" aria-label="${esc(bucketName(b))}">
+                            ${i === sel && totals[i] ? `<span class="sc-val" style="bottom:calc(${h}% + 3px)">${fmt(totals[i])}</span>` : ''}
+                            <span class="sc-stack" style="height:${h}%">${series.map(s => {
+                                const v = Math.max(0, s.get(b) || 0);
+                                return v ? `<span class="sc-seg" style="flex:${v};background:${s.color}"></span>` : '';
+                            }).join('')}</span>
+                        </button>`;
+                    }).join('')}</div>
+                </div>
+                ${xLabels(buckets)}
+                <div class="sc-detail">${buckets.length ? detail(buckets[sel]) : 'No data yet'}</div>`;
+        }
+
+        // Line with dots; gaps where there's no value
+        function lineChart(el, { title, buckets, get, lo, hi, fmt, detail }) {
+            const n = buckets.length, sel = statsSel ?? n - 1;
+            const vals = buckets.map(get);
+            const x = i => (i + 0.5) / n * 100;
+            const y = v => hi > lo ? (v - lo) / (hi - lo) * 100 : 0;
+            const runs = [];
+            let run = [];
+            vals.forEach((v, i) => { if (v == null) { if (run.length) runs.push(run); run = []; } else run.push(`${x(i)},${100 - y(v)}`); });
+            if (run.length) runs.push(run);
+            el.innerHTML = `<div class="sc-head"><span class="label">${title}</span></div>
+                <div class="sc-plot"><div class="sc-max">${fmt(hi)}</div>
+                    <svg class="sc-line" viewBox="0 0 100 100" preserveAspectRatio="none">${runs.map(r =>
+                        `<polyline points="${r.join(' ')}" fill="none" stroke="var(--sold)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>`).join('')}</svg>
+                    <div class="sc-cols" style="gap:0">${buckets.map((b, i) => `<button class="sc-col${i === sel ? ' sel' : ''}" data-i="${i}" aria-label="${esc(bucketName(b))}">
+                        ${vals[i] == null ? '' : `<span class="sc-dot${i === sel ? ' on' : ''}" style="bottom:${y(vals[i])}%"></span>`}
+                        ${i === sel && vals[i] != null ? `<span class="sc-val" style="bottom:calc(${y(vals[i])}% + 9px)">${fmt(vals[i])}</span>` : ''}
+                    </button>`).join('')}</div>
+                </div>
+                ${xLabels(buckets, true)}
+                <div class="sc-detail">${n ? detail(buckets[sel]) : 'No data yet'}</div>`;
+        }
+
+        function renderStats() {
+            if (!statsEntries) return;
+            const all = statsEntries;
+            const collected = all.filter(e => e.type === 'collected'), sold = all.filter(e => e.type === 'sold'), farm = all.filter(e => e.type === 'farm');
+            const eggs = sum(collected, e => e.eggs), soldEggs = sum(sold, e => e.eggs), cents = sum(sold, valueCents), farmEggs = sum(farm, e => e.eggs);
+            const since = fmtDay(statsFrom, { month: 'short', day: 'numeric', year: 'numeric' });
+
+            $('statTiles').innerHTML = `
+                <div class="stat-tile"><span class="label">Eggs collected</span><b class="num">${eggs.toLocaleString()}</b><small>since ${esc(since)}</small></div>
+                <div class="stat-tile"><span class="label">Dozen sold</span><b class="num">${fmtDz(soldEggs)}</b><small>+ ${fmtDz(farmEggs)} dz to the farm</small></div>
+                <div class="stat-tile"><span class="label">Earned</span><b class="num" style="color:var(--grass)">${fmtMoney(cents)}</b><small>from ${fmtDz(soldEggs)} dz</small></div>
+                <div class="stat-tile"><span class="label">Avg per dozen</span><b class="num">${soldEggs > 0 ? fmtPrice(cents / 100 / (soldEggs / 12)) : '–'}</b><small>all sales</small></div>`;
+
+            // Sold vs farm ring
+            const out = soldEggs + farmEggs;
+            if (out > 0) {
+                const s = soldEggs / out * 100, f = 100 - s, gap = s > 0 && f > 0 ? 1 : 0;
+                $('ringRow').innerHTML = `<svg width="108" height="108" viewBox="0 0 42 42" role="img" aria-label="${Math.round(s)}% sold, ${Math.round(f)}% to the farm">
+                        <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--line)" stroke-width="6"/>
+                        ${s ? `<circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--sold)" stroke-width="6" stroke-dasharray="${s - gap} ${100 - s + gap}" stroke-dashoffset="25"/>` : ''}
+                        ${f ? `<circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--farm)" stroke-width="6" stroke-dasharray="${f - gap} ${100 - f + gap}" stroke-dashoffset="${25 - s}"/>` : ''}
+                        <text x="21" y="22" text-anchor="middle" style="font: 700 8px var(--font-display); fill: var(--ink)">${Math.round(s)}%</text>
+                        <text x="21" y="27.5" text-anchor="middle" style="font: 600 3.6px var(--font-body); fill: var(--steel)">sold</text>
+                    </svg>
+                    <div class="ring-legend num">
+                        <span><i style="background:var(--sold)"></i>Sold · <b>${fmtDz(soldEggs)}</b> dz (${Math.round(s)}%)</span>
+                        <span><i style="background:var(--farm)"></i>Farm · <b>${fmtDz(farmEggs)}</b> dz (${Math.round(f)}%)</span>
+                    </div>`;
+            } else {
+                $('ringRow').innerHTML = '<div class="muted">No eggs sold or sent to the farm yet.</div>';
+            }
+
+            const buckets = statBuckets();
+            const per = statsPeriod === 'months' ? ' a week' : '';
+            barChart($('chartProd'), {
+                title: statsPeriod === 'weeks' ? 'Eggs collected by week' : 'Eggs collected · avg per week', buckets,
+                series: [{ get: b => b.eggs, color: 'var(--bar)' }],
+                fmt: v => Math.round(v).toLocaleString(),
+                detail: b => `${esc(bucketName(b))}: <b>${Math.round(b.eggs).toLocaleString()}</b> eggs${per}`
+            });
+            const lays = buckets.map(b => b.lay).filter(v => v != null);
+            lineChart($('chartLay'), {
+                title: 'Lay rate', buckets, get: b => b.lay,
+                lo: 0, hi: Math.max(1, Math.ceil(Math.max(0, ...lays) * 10) / 10), fmt: v => Math.round(v * 100) + '%',
+                detail: b => b.lay == null ? `${esc(bucketName(b))}: no eggs logged` : `${esc(bucketName(b))}: <b>${Math.round(b.lay * 100)}%</b> of hens laying`
+            });
+            barChart($('chartSold'), {
+                title: statsPeriod === 'weeks' ? 'Dozen sold by week' : 'Dozen sold · avg per week', buckets,
+                legend: '<span class="sc-legend"><span><i style="background:var(--sold)"></i>Sold</span><span><i style="background:var(--farm)"></i>Farm</span></span>',
+                series: [{ get: b => b.soldEggs / 12, color: 'var(--sold)' }, { get: b => b.farmEggs / 12, color: 'var(--farm)' }],
+                fmt: v => (Math.round(v * 10) / 10).toFixed(1),
+                detail: b => `${esc(bucketName(b))}: <b>${fmtDz(b.soldEggs)}</b> dz sold · ${fmtDz(b.farmEggs)} dz farm${per}`
+            });
+            barChart($('chartEarn'), {
+                title: statsPeriod === 'weeks' ? 'Earnings by week' : 'Earnings · avg per week', buckets,
+                series: [{ get: b => b.cents / 100, color: 'var(--sold)' }],
+                fmt: v => '$' + Math.round(v).toLocaleString(),
+                detail: b => `${esc(bucketName(b))}: <b>${fmtMoney(Math.round(b.cents))}</b>${per}`
+            });
+            const pricesSeen = buckets.map(b => b.price).filter(v => v != null);
+            lineChart($('chartPrice'), {
+                title: 'Average price per dozen', buckets, get: b => b.price,
+                lo: pricesSeen.length ? Math.max(0, Math.floor(Math.min(...pricesSeen) - 0.5)) : 0,
+                hi: pricesSeen.length ? Math.ceil(Math.max(...pricesSeen) + 0.5) : 1,
+                fmt: v => fmtPrice(v),
+                detail: b => b.price == null ? `${esc(bucketName(b))}: no sales` : `${esc(bucketName(b))}: <b>${fmtPrice(b.price)}</b> a dozen`
+            });
+
+            // Records since the flock start
+            const byDay = {};
+            collected.forEach(e => { byDay[e.date] = (byDay[e.date] || 0) + e.eggs; });
+            const dayList = Object.entries(byDay);
+            const bestDay = dayList.reduce((m, d) => (!m || d[1] > m[1] ? d : m), null);
+            const byWeek = {};
+            dayList.forEach(([d, n]) => { const w = weekStart(d); byWeek[w] = (byWeek[w] || 0) + n; });
+            const bestWeek = Object.entries(byWeek).reduce((m, w) => (!m || w[1] > m[1] ? w : m), null);
+            const bestLay = dayList.map(([d, n]) => [d, n / flockSizeOn(d)]).reduce((m, d) => (!m || d[1] > m[1] ? d : m), null);
+            const metres = eggs * 0.057;   // an egg is about 5.7 cm long
+            const md = d => fmtDay(d, { month: 'short', day: 'numeric' });
+            $('records').innerHTML = `
+                <div><small>Best day</small><b class="num">${bestDay ? `${bestDay[1]} eggs` : '–'}</b><div class="muted">${bestDay ? esc(md(bestDay[0])) : ''}</div></div>
+                <div><small>Best week</small><b class="num">${bestWeek ? `${bestWeek[1].toLocaleString()} eggs` : '–'}</b><div class="muted">${bestWeek ? 'Week of ' + esc(md(bestWeek[0])) : ''}</div></div>
+                <div><small>Top lay rate</small><b class="num">${bestLay ? Math.round(bestLay[1] * 100) + '%' : '–'}</b><div class="muted">${bestLay ? esc(md(bestLay[0])) : ''}</div></div>
+                <div><small>End to end</small><b class="num">${metres >= 1000 ? (metres / 1000).toFixed(2) + ' km' : Math.round(metres) + ' m'}</b><div class="muted">of eggs, laid in a line</div></div>`;
+
+            $('statsNote').textContent = `Everything counts from the flock start, ${since}. ` +
+                (statsPeriod === 'weeks' ? 'Weeks run Sunday to Saturday. Tap a bar to see its numbers.' : 'Each month shows its average per week, so part-months compare fairly. Tap a bar to see its numbers.');
+        }
+
+        $('statsPeriod').addEventListener('click', e => {
+            const b = e.target.closest('[data-period]');
+            if (!b || b.dataset.period === statsPeriod) return;
+            statsPeriod = b.dataset.period;
+            statsSel = null;
+            $('statsPeriod').querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+            renderStats();
+        });
+        $('tabStats').addEventListener('click', e => {
+            const col = e.target.closest('.sc-col');
+            if (!col) return;
+            statsSel = Number(col.dataset.i);
+            renderStats();
         });
 
         // ---------- Export ----------
