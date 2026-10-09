@@ -152,7 +152,6 @@
         .split > div + div { border-left: 1px solid var(--line); }
         .split span { font-size: 14px; color: var(--steel); font-weight: 600; }
         .split b { font-family: var(--font-display); font-size: 30px; line-height: 1.1; }
-        .yday { margin-top: 12px; font-size: 14px; color: var(--steel); display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
 
         /* Day arrows sit in the card's top corners so they add no height */
         .today { position: relative; }
@@ -162,12 +161,14 @@
         .day-arrow:disabled { opacity: 0.2; }
         #dayPrev { left: 6px; }
         #dayNext { right: 6px; }
-        .back-today { height: 30px; padding: 0 12px; border-radius: 15px; background: var(--egg); color: var(--on-dark); font-weight: 700; font-size: 13px; }
+        .day-line { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 26px; }
+        .today-pill { height: 26px; padding: 0 12px; border-radius: 13px; background: var(--egg); color: var(--on-dark); font-weight: 700; font-size: 13px; }
 
         /* Viewing a past day: egg-brown card and buttons so it never looks like today */
         #tabRecord.past .today { background: var(--egg-tint); border-color: var(--egg); }
         #tabRecord.past .today .label { color: var(--egg); }
         #tabRecord.past .split, #tabRecord.past .split > div + div { border-color: rgba(184, 116, 69, 0.3); }
+        #tabRecord.past .add-btn { background: var(--egg-tint); border-color: var(--egg); }
         #tabRecord.past .add-btn b { color: var(--egg); }
         #tabRecord.past .add-btn:active { background: var(--egg-tint); border-color: var(--egg); }
 
@@ -179,8 +180,6 @@
         }
         .add-btn b { font-family: var(--font-display); font-weight: 700; font-size: 32px; line-height: 1; color: var(--comb); }
         .add-grid .add-btn span { font-size: 13px; }
-        .add-btn.feature { background: var(--comb-tint); border-color: var(--comb); }
-        #tabRecord.past .add-btn.feature { background: var(--egg-tint); border-color: var(--egg); }
 
         /* Editable total */
         .total-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0 8px; border-radius: var(--r-md); }
@@ -230,7 +229,6 @@
         .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--steel-tint); border-radius: var(--r-md); }
         .seg button { height: 42px; border-radius: 9px; font-weight: 600; font-size: 16px; color: var(--steel); }
         .seg button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px var(--shadow); }
-        .seg-3 { grid-template-columns: 1fr 1fr 1fr; }
 
         .total-line { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px; }
         .total-line b { font-family: var(--font-display); font-size: 22px; }
@@ -300,19 +298,28 @@
         .screen-inner { max-width: var(--content); margin: 0 auto; padding: 14px 14px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
 
         /* History */
-        .day-group { overflow: hidden; }
-        .day-head { padding: 12px 14px 10px; background: var(--steel-tint); display: flex; flex-direction: column; gap: 2px; }
-        .day-head b { font-family: var(--font-display); font-size: 18px; }
-        .day-head span { font-size: 13px; color: var(--steel); }
-        .entry-row { width: 100%; display: grid; grid-template-columns: 62px 1fr auto 16px; gap: 10px; align-items: center; padding: 12px 14px; text-align: left; border-top: 1px solid var(--line); }
-        .entry-row:active { background: var(--steel-tint); }
-        .entry-row .time { font-size: 13px; color: var(--steel); }
-        .entry-row .what { font-weight: 600; }
-        .entry-row .what small { display: block; font-weight: 500; font-size: 13px; color: var(--steel); }
-        .entry-row .who { font-size: 13px; font-weight: 600; color: var(--steel); }
-        .entry-row .i { width: 16px; height: 16px; color: var(--steel-soft); }
-        .tag { display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; vertical-align: 2px; margin-left: 4px; }
-        .tag-collected { background: var(--egg-tint); color: var(--egg); }
+        .hist-day { width: 100%; display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; text-align: left; }
+        .hist-day:active { background: var(--steel-tint); }
+        .hist-date { display: flex; align-items: center; justify-content: space-between; }
+        .hist-date b { font-family: var(--font-display); font-size: 18px; }
+        .hist-date .i { width: 16px; height: 16px; color: var(--steel); }
+        .hist-totals { display: grid; grid-template-columns: repeat(3, 1fr); }
+        .hist-totals > span { display: flex; flex-direction: column; gap: 1px; padding-left: 10px; }
+        .hist-totals > span:first-child { padding-left: 0; }
+        .hist-totals > span + span { border-left: 1px solid var(--line); }
+        .hist-totals small { font-size: 12px; font-weight: 600; color: var(--steel); text-transform: uppercase; letter-spacing: 0.04em; }
+        .hist-totals b { font-family: var(--font-display); font-size: 24px; line-height: 1.1; }
+        .hist-totals em { font-style: normal; font-size: 12px; color: var(--steel); }
+
+        /* Day totals sheet */
+        .day-section { font-size: 13px; font-weight: 600; color: var(--steel); text-transform: uppercase; letter-spacing: 0.04em; margin: 12px 0 4px; }
+        .day-row { display: grid; grid-template-columns: 1fr 170px; align-items: center; gap: 10px; padding: 4px 0; }
+        .day-row-label { font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+        .day-row-label small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 12px; color: var(--steel); }
+        .mini-stepper { display: grid; grid-template-columns: 44px 1fr 44px; gap: 6px; }
+        .mini-stepper button { height: 44px; border-radius: 10px; background: var(--steel-tint); font-size: 22px; font-weight: 700; }
+        .mini-stepper button:active { background: var(--line-strong); }
+        .mini-stepper .input { height: 44px; padding: 0 4px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
         .tag-sold { background: var(--grass-tint); color: var(--grass); }
         .tag-farm { background: var(--steel-tint); color: var(--steel); }
         .empty { text-align: center; color: var(--steel); padding: 28px 12px; }
@@ -367,7 +374,6 @@
             .today { padding: 12px 14px 10px; }
             .split { margin-top: 10px; }
             .split > div { padding-top: 8px; }
-            .yday { margin-top: 8px; }
             .undo-row .text-btn { padding: 4px 10px; }
             .tab { gap: 10px; padding-top: 10px; padding-bottom: 10px; }
         }
@@ -422,12 +428,10 @@
                 <div class="card today">
                     <button class="day-arrow" id="dayPrev" aria-label="Previous day"><svg class="i"><use href="#i-chev-left"/></svg></button>
                     <button class="day-arrow" id="dayNext" aria-label="Next day"><svg class="i"><use href="#i-chev"/></svg></button>
-                    <div class="label" id="todayLabel">Today</div>
+                    <div class="day-line"><span class="label" id="todayLabel">Today</span><button class="today-pill hidden" id="backToday">Today</button></div>
                     <button class="total-btn" id="totalBtn" aria-label="Edit total"><span class="big num" id="todayTotal">0</span><svg class="i"><use href="#i-pencil"/></svg></button>
                     <div class="unit">eggs collected<span id="layRate"></span></div>
-                    <div class="split" id="todaySplit"></div>
-                    <div class="yday hidden" id="ydayLine"><button class="back-today" id="backToday">Back to today</button></div>
-                </div>
+                    <div class="split" id="todaySplit"></div>                </div>
                 <div class="card week-chart">
                     <div class="chart-head"><span class="label">Last 7 days</span><span class="muted" id="weekTotal"></span></div>
                     <div class="bars" id="bars"></div>
@@ -437,7 +441,7 @@
                     <button class="add-btn" data-collect="1"><b>+1</b><span>egg</span></button>
                     <button class="add-btn" data-collect="6"><b>+6</b><span>half</span></button>
                     <button class="add-btn" data-collect="12"><b>+12</b><span>dozen</span></button>
-                    <button class="add-btn feature" data-collect="42"><b>+42</b><span>tray</span></button>
+                    <button class="add-btn" data-collect="42"><b>+42</b><span>tray</span></button>
                 </div>
                 <div class="undo-row"><button class="text-btn" data-undo="collected"><svg class="i"><use href="#i-undo"/></svg>Undo last</button></div>
             </section>
@@ -504,7 +508,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.1</div>
+        <div class="version">Egg App v1.2</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -524,43 +528,14 @@
         </div>
     </div>
 
-    <!-- Add / edit entry (History) -->
-    <div id="entrySheet" class="sheet hidden">
+    <!-- Edit a day's totals (History) -->
+    <div id="daySheet" class="sheet hidden">
         <div class="grab"></div>
-        <h2 id="entryTitle">Edit entry</h2>
-        <div class="field">
-            <span class="field-label">Type</span>
-            <div class="seg seg-3" id="entryType">
-                <button data-type="collected">Collected</button>
-                <button data-type="sold">Sold</button>
-                <button data-type="farm">Farm</button>
-            </div>
-        </div>
-        <div class="field">
-            <span class="field-label" id="entryAmountLabel">Amount</span>
-            <div class="stepper">
-                <button id="entryMinus" aria-label="Less">−</button>
-                <input class="input num" id="entryAmount" inputmode="decimal" autocomplete="off">
-                <button id="entryPlus" aria-label="More">+</button>
-            </div>
-        </div>
-        <div class="field" id="entryPriceField">
-            <span class="field-label">Price per dozen</span>
-            <div class="chips" id="entryPrices"></div>
-        </div>
-        <div class="field-row">
-            <div class="field">
-                <label for="entryDate">Date</label>
-                <input type="date" class="input" id="entryDate">
-            </div>
-            <div class="field">
-                <span class="field-label">Person</span>
-                <div class="chips" id="entryUsers"></div>
-            </div>
-        </div>
+        <h2 id="dayTitle"></h2>
+        <p class="sub">Set the day's totals. Any difference is saved as a correction.</p>
+        <div id="dayRows"></div>
         <div class="sheet-actions">
-            <button class="btn btn-primary btn-block" id="entrySave">Save</button>
-            <button class="btn btn-danger btn-block" id="entryDelete"><svg class="i"><use href="#i-trash"/></svg>Delete entry</button>
+            <button class="btn btn-primary btn-block" id="daySave">Save</button>
             <button class="btn btn-quiet btn-block" data-close>Cancel</button>
         </div>
     </div>
@@ -581,7 +556,6 @@
         <div class="screen-head">
             <button class="icon-btn" data-close aria-label="Back"><svg class="i"><use href="#i-back"/></svg></button>
             <h2>History</h2>
-            <button class="text-btn" id="historyAdd"><svg class="i"><use href="#i-plus"/></svg>Add</button>
         </div>
         <div class="screen-body"><div class="screen-inner" id="historyList"></div></div>
     </div>
@@ -692,6 +666,9 @@
             auth.useEmulator('http://127.0.0.1:9098');
             db.useEmulator('127.0.0.1', 8081);
         }
+        // Keep a copy of recent data on the phone so the app opens straight to the last numbers
+        // and catches up with the server a moment later
+        db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
         const entriesRef = db.collection('entries');
         const settingsRef = db.collection('settings').doc('main');
         const serverTime = () => firebase.firestore.FieldValue.serverTimestamp();
@@ -862,7 +839,7 @@
             $('todaySplit').innerHTML = USERS.map(u =>
                 `<div><span>${esc(u)}</span><b class="num">${loading ? '…' : sum(dayList.filter(e => e.user === u), e => e.eggs)}</b></div>`
             ).join('');
-            $('ydayLine').classList.toggle('hidden', !recordDay);
+            $('backToday').classList.toggle('hidden', !recordDay);
             renderChart();
         }
 
@@ -907,23 +884,28 @@
 
         // Correct a day's collected total. Raising adds eggs for whoever is using the phone;
         // lowering takes them off whoever logged more that day (then the other person).
-        function correctCollected(day, newTotal) {
-            const list = recordSource().filter(e => e.type === 'collected' && e.date === day);
+        // Adds the correction writes to `batch` and returns how many it added.
+        function addCollectedCorrection(batch, entries, day, newTotal) {
+            const list = entries.filter(e => e.type === 'collected' && e.date === day);
             const diff = newTotal - sum(list, e => e.eggs);
-            if (!diff) return;
-            const batch = db.batch();
+            if (!diff) return 0;
             const base = { type: 'collected', date: day, adjust: true, createdAt: serverTime() };
             if (diff > 0) {
                 batch.set(entriesRef.doc(), { ...base, eggs: diff, user: me });
-            } else {
-                let remove = -diff;
-                const byUser = USERS.map(u => ({ u, n: sum(list.filter(e => e.user === u), e => e.eggs) })).sort((a, b) => b.n - a.n);
-                for (const { u, n } of byUser) {
-                    const take = Math.min(remove, Math.max(n, 0));
-                    if (take > 0) { batch.set(entriesRef.doc(), { ...base, eggs: -take, user: u }); remove -= take; }
-                }
-                if (remove > 0) batch.set(entriesRef.doc(), { ...base, eggs: -remove, user: byUser[0].u });
+                return 1;
             }
+            let remove = -diff, writes = 0;
+            const byUser = USERS.map(u => ({ u, n: sum(list.filter(e => e.user === u), e => e.eggs) })).sort((a, b) => b.n - a.n);
+            for (const { u, n } of byUser) {
+                const take = Math.min(remove, Math.max(n, 0));
+                if (take > 0) { batch.set(entriesRef.doc(), { ...base, eggs: -take, user: u }); remove -= take; writes++; }
+            }
+            if (remove > 0) { batch.set(entriesRef.doc(), { ...base, eggs: -remove, user: byUser[0].u }); writes++; }
+            return writes;
+        }
+        function correctCollected(day, newTotal) {
+            const batch = db.batch();
+            if (!addCollectedCorrection(batch, recordSource(), day, newTotal)) return;
             buzz();
             batch.commit().catch(showError);
         }
@@ -942,7 +924,7 @@
 
         $('dayPrev').addEventListener('click', () => setRecordDay(addDays(viewDay(), -1)));
         $('dayNext').addEventListener('click', () => setRecordDay(addDays(viewDay(), 1)));
-        $('ydayLine').addEventListener('click', e => { if (e.target.closest('#backToday')) setRecordDay(null); });
+        $('backToday').addEventListener('click', () => setRecordDay(null));
 
         function weekStats(from) {
             const to = addDays(from, 6);
@@ -1040,9 +1022,7 @@
         $('confirmOk').addEventListener('click', () => {
             const action = confirmAction;
             confirmAction = null;
-            // A confirm opened from the entry sheet closes both
-            const fromEntry = layers.length >= 2 && layers[layers.length - 2].el === $('entrySheet') && action && action.closesParent;
-            closeLayers(fromEntry ? 2 : 1);
+            closeLayers(1);
             if (action) action();
         });
 
@@ -1246,10 +1226,10 @@
             showPick();
         });
 
-        // ---------- History ----------
-        let histDays = 30, histUnsub = null, histEntries = [];
+        // ---------- History: one card per day with its totals ----------
+        let histDays = 2, histUnsub = null, histEntries = [];
         function openHistory() {
-            histDays = 30;
+            histDays = 2;
             subscribeHistory();
             openLayer($('historyScreen'), { replace: true, onClose: () => { if (histUnsub) histUnsub(); histUnsub = null; } });
         }
@@ -1262,127 +1242,100 @@
                 renderHistory();
             }, showError);
         }
+        function dayTotals(list) {
+            const sold = list.filter(e => e.type === 'sold');
+            return {
+                collected: sum(list.filter(e => e.type === 'collected'), e => e.eggs),
+                soldEggs: sum(sold, e => e.eggs),
+                cents: sum(sold, valueCents),
+                farm: sum(list.filter(e => e.type === 'farm'), e => e.eggs)
+            };
+        }
         function renderHistory() {
-            const byDay = {};
-            histEntries.forEach(e => { (byDay[e.date] = byDay[e.date] || []).push(e); });
-            const days = Object.keys(byDay).sort().reverse();
-            const typeLabel = { collected: 'Collected', sold: 'Sold', farm: 'Farm' };
-            const html = days.map(d => {
-                const list = byDay[d].sort((a, b) => b.ts - a.ts);
-                const col = sum(list.filter(e => e.type === 'collected'), e => e.eggs);
-                const sold = list.filter(e => e.type === 'sold');
-                const farm = sum(list.filter(e => e.type === 'farm'), e => e.eggs);
-                const bits = [`${col} eggs collected`];
-                if (sold.length) bits.push(`${fmtDz(sum(sold, e => e.eggs))} dz sold (${fmtMoney(sum(sold, valueCents))})`);
-                if (farm) bits.push(`${fmtDz(farm)} dz farm`);
-                return `<div class="card day-group">
-                    <div class="day-head"><b>${esc(fmtDay(d))}</b><span class="num">${esc(bits.join(' · '))}</span></div>
-                    ${list.map(e => `<button class="entry-row" data-entry="${esc(e.id)}">
-                        <span class="time num">${esc(fmtTime(e.ts))}</span>
-                        <span class="what num">${esc(describe(e))}<span class="tag tag-${esc(e.type)}">${typeLabel[e.type] || esc(e.type)}</span>${e.adjust ? '<small>Correction</small>' : ''}</span>
-                        <span class="who">${esc(e.user)}</span>
-                        <svg class="i"><use href="#i-chev"/></svg>
-                    </button>`).join('')}
-                </div>`;
-            }).join('');
-            $('historyList').innerHTML = (html || `<div class="empty">No entries in the last ${histDays} days.</div>`)
-                + `<button class="btn btn-quiet btn-block" id="historyMore">Show older (before ${esc(fmtDay(addDays(today, -(histDays - 1)), { month: 'short', day: 'numeric', year: 'numeric' }))})</button>`;
+            // Every day in the range gets a card, even empty ones, so a missed day can be filled in
+            const days = Array.from({ length: histDays }, (_, i) => addDays(today, -i));
+            $('historyList').innerHTML = days.map(d => {
+                const t = dayTotals(histEntries.filter(e => e.date === d));
+                const name = d === today ? 'Today · ' + shortDay(d) : d === addDays(today, -1) ? 'Yesterday · ' + shortDay(d) : fmtDay(d, { weekday: 'long', month: 'short', day: 'numeric', year: d.slice(0, 4) === today.slice(0, 4) ? undefined : 'numeric' });
+                return `<button class="card hist-day" data-day="${d}">
+                    <span class="hist-date"><b>${esc(name)}</b><svg class="i"><use href="#i-pencil"/></svg></span>
+                    <span class="hist-totals num">
+                        <span><small>Collected</small><b>${t.collected}</b><em>eggs</em></span>
+                        <span><small>Sold</small><b>${fmtDz(t.soldEggs)}</b><em>dz · ${fmtMoney(t.cents)}</em></span>
+                        <span><small>Farm</small><b>${fmtDz(t.farm)}</b><em>dz</em></span>
+                    </span>
+                </button>`;
+            }).join('') + '<button class="btn btn-quiet btn-block" id="historyMore">Load more</button>';
         }
         $('historyList').addEventListener('click', e => {
-            if (e.target.closest('#historyMore')) { histDays += 30; subscribeHistory(); return; }
-            const row = e.target.closest('[data-entry]');
-            if (row) {
-                const entry = histEntries.find(x => x.id === row.dataset.entry);
-                if (entry) openEntrySheet(entry);
-            }
+            if (e.target.closest('#historyMore')) { histDays += 7; subscribeHistory(); return; }
+            const card = e.target.closest('[data-day]');
+            if (card) openDaySheet(card.dataset.day);
         });
-        $('historyAdd').addEventListener('click', () => openEntrySheet(null));
 
-        // ---------- Add / edit entry ----------
-        let entryCtx = null; // { id, type, eggs, price, date, user, adjust }
-        function openEntrySheet(entry) {
-            entryCtx = entry
-                ? { id: entry.id, type: entry.type, eggs: entry.eggs, price: entry.price, date: entry.date, user: entry.user, adjust: !!entry.adjust }
-                : { id: null, type: 'collected', eggs: 12, price: prices[0] ?? DEFAULT_PRICES[0], date: today, user: me, adjust: false };
-            $('entryTitle').textContent = entry ? 'Edit entry' : 'Add entry';
-            $('entryDelete').classList.toggle('hidden', !entry);
-            $('entryDate').value = entryCtx.date;
-            $('entryDate').max = today;
-            renderEntrySheet();
-            openLayer($('entrySheet'));
+        // ---------- Edit a day's totals ----------
+        let dayCtx = null; // { day, list, collected, farm, sold: { price: eggs } }
+        function openDaySheet(day) {
+            const list = histEntries.filter(e => e.date === day);
+            const t = dayTotals(list);
+            const sold = {};
+            list.filter(e => e.type === 'sold').forEach(e => { sold[e.price] = (sold[e.price] || 0) + e.eggs; });
+            const rowPrices = [...new Set([...prices, ...Object.keys(sold).map(Number).filter(p => sold[p] !== 0)])].sort((a, b) => a - b);
+            dayCtx = { day, list, collected: t.collected, farm: t.farm, sold };
+            const row = (key, label, unit, value) => `<div class="day-row">
+                <div class="day-row-label">${label}${unit ? `<small>${unit}</small>` : ''}</div>
+                <div class="mini-stepper">
+                    <button data-key="${key}" data-d="-1" aria-label="Less">−</button>
+                    <input class="input num" data-key="${key}" inputmode="decimal" autocomplete="off" value="${value}">
+                    <button data-key="${key}" data-d="1" aria-label="More">+</button>
+                </div>
+            </div>`;
+            $('dayTitle').textContent = fmtDay(day, { weekday: 'long', month: 'short', day: 'numeric' });
+            $('dayRows').innerHTML =
+                '<div class="day-section">Collected</div>' + row('collected', 'Eggs', '', t.collected) +
+                '<div class="day-section">Sold</div>' + rowPrices.map(p => row('sold:' + p, fmtPrice(p), 'dozen', fmtDz(sold[p] || 0))).join('') +
+                '<div class="day-section">Farm</div>' + row('farm', 'To the farm', 'dozen', fmtDz(t.farm));
+            openLayer($('daySheet'));
         }
-        const entryUnitIsDozen = () => entryCtx.type !== 'collected';
-        function renderEntrySheet() {
-            const c = entryCtx;
-            $('entryType').querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.type === c.type));
-            $('entryAmountLabel').textContent = entryUnitIsDozen() ? 'Dozen' : 'Eggs';
-            $('entryAmount').value = entryUnitIsDozen() ? fmtDz(c.eggs) : c.eggs;
-            $('entryPriceField').classList.toggle('hidden', c.type !== 'sold');
-            const plist = [...new Set([...prices, ...(c.price != null ? [c.price] : [])])].sort((a, b) => a - b);
-            $('entryPrices').innerHTML = plist.map(p => `<button class="chip num${p === c.price ? ' active' : ''}" data-price="${p}">${fmtPrice(p)}</button>`).join('');
-            $('entryUsers').innerHTML = USERS.map(u => `<button class="chip${u === c.user ? ' active' : ''}" data-u="${esc(u)}">${esc(u)}</button>`).join('');
-        }
-        function readEntryAmount() {
-            const v = parseNum($('entryAmount').value);
-            if (!isFinite(v)) return null;
-            return entryUnitIsDozen() ? Math.round(v * 12) : Math.round(v);
-        }
-        $('entryType').addEventListener('click', e => {
-            const b = e.target.closest('[data-type]');
+        const dayInput = key => $('dayRows').querySelector(`input[data-key="${key}"]`);
+        $('dayRows').addEventListener('click', e => {
+            const b = e.target.closest('button[data-key]');
             if (!b) return;
-            const eggs = readEntryAmount();
-            if (eggs !== null) entryCtx.eggs = eggs;
-            entryCtx.type = b.dataset.type;
-            if (entryCtx.type === 'sold' && entryCtx.price == null) entryCtx.price = prices[0] ?? DEFAULT_PRICES[0];
-            renderEntrySheet();
+            const input = dayInput(b.dataset.key);
+            const v = parseNum(input.value) || 0, d = Number(b.dataset.d);
+            input.value = b.dataset.key === 'collected'
+                ? Math.max(0, Math.round(v) + d)
+                : Math.max(0, Math.round((v + d * 0.5) * 2) / 2).toFixed(1);
         });
-        function stepEntry(dir) {
-            const eggs = readEntryAmount() ?? 0;
-            entryCtx.eggs = eggs + dir * (entryUnitIsDozen() ? 6 : 1);
-            if (!entryCtx.adjust && entryCtx.eggs < 0) entryCtx.eggs = 0;
-            renderEntrySheet();
-        }
-        $('entryMinus').addEventListener('click', () => stepEntry(-1));
-        $('entryPlus').addEventListener('click', () => stepEntry(1));
-        $('entryPrices').addEventListener('click', e => {
-            const b = e.target.closest('[data-price]');
-            if (!b) return;
-            entryCtx.eggs = readEntryAmount() ?? entryCtx.eggs;
-            entryCtx.price = Number(b.dataset.price);
-            renderEntrySheet();
-        });
-        $('entryUsers').addEventListener('click', e => {
-            const b = e.target.closest('[data-u]');
-            if (!b) return;
-            entryCtx.eggs = readEntryAmount() ?? entryCtx.eggs;
-            entryCtx.user = b.dataset.u;
-            renderEntrySheet();
-        });
-        $('entrySave').addEventListener('click', () => {
-            const c = entryCtx;
-            const eggs = readEntryAmount();
-            const date = $('entryDate').value;
-            if (eggs === null || eggs === 0 || Math.abs(eggs) > 9999) { toast('Enter an amount', true); return; }
-            if (eggs < 0 && !c.adjust) { toast('Amount can’t be negative', true); return; }
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { toast('Pick a date', true); return; }
-            if (c.type === 'sold' && c.price == null) { toast('Pick a price', true); return; }
-            const data = { type: c.type, eggs, user: c.user, date };
-            if (c.type === 'sold') data.price = c.price;
-            closeLayers(1);
-            if (c.id) {
-                data.updatedAt = serverTime();
-                if (c.type !== 'sold') data.price = firebase.firestore.FieldValue.delete();
-                entriesRef.doc(c.id).update(data).then(() => toast('Saved')).catch(showError);
-            } else {
-                data.createdAt = serverTime();
-                entriesRef.add(data).then(() => toast('Added')).catch(showError);
+        $('daySave').addEventListener('click', () => {
+            const c = dayCtx;
+            const read = (key, inEggs) => {
+                const v = parseNum(dayInput(key).value);
+                if (!isFinite(v) || v < 0 || v > 9999) return null;
+                return inEggs ? Math.round(v) : Math.round(v * 12);
+            };
+            const collected = read('collected', true);
+            const farm = read('farm', false);
+            const sold = {};
+            let bad = collected === null || farm === null;
+            $('dayRows').querySelectorAll('input[data-key^="sold:"]').forEach(inp => {
+                const p = Number(inp.dataset.key.slice(5));
+                sold[p] = read(inp.dataset.key, false);
+                if (sold[p] === null) bad = true;
+            });
+            if (bad) { toast('Check the numbers: they can’t be blank or negative', true); return; }
+            const batch = db.batch();
+            const base = { date: c.day, adjust: true, createdAt: serverTime() };
+            let writes = addCollectedCorrection(batch, c.list, c.day, collected);
+            for (const [p, eggs] of Object.entries(sold)) {
+                const diff = eggs - (c.sold[p] || 0);
+                if (diff) { batch.set(entriesRef.doc(), { ...base, type: 'sold', eggs: diff, price: Number(p), user: me }); writes++; }
             }
-        });
-        $('entryDelete').addEventListener('click', () => {
-            const id = entryCtx.id;
-            const action = () => entriesRef.doc(id).delete().then(() => toast('Deleted')).catch(showError);
-            action.closesParent = true;
-            confirmSheet({ title: 'Delete this entry?', text: 'This can’t be undone.', ok: 'Delete', onOk: action });
+            if (farm !== c.farm) { batch.set(entriesRef.doc(), { ...base, type: 'farm', eggs: farm - c.farm, user: me }); writes++; }
+            closeLayers(1);
+            if (!writes) return;
+            buzz();
+            batch.commit().then(() => toast('Saved')).catch(showError);
         });
 
         // ---------- Export ----------
