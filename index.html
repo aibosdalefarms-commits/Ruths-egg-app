@@ -187,6 +187,7 @@
         .total-btn .big { margin-top: 0; }
         .total-btn .i { width: 20px; height: 20px; color: var(--steel); }
         .lay { color: var(--grass); }
+        .lay-note { color: var(--steel); font-weight: 500; }
 
         /* Last 7 days chart */
         .week-chart { flex: 1; min-height: 136px; max-height: 240px; padding: 12px 14px 10px; display: flex; flex-direction: column; }
@@ -572,7 +573,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.3</div>
+        <div class="version">Egg App v1.4</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -900,8 +901,23 @@
             const total = sum(dayList, e => e.eggs);
             const flock = flockSizeOn(day);
             $('todayTotal').textContent = loading ? '…' : total;
-            $('layRate').innerHTML = !loading && flock > 0 && dayList.length
-                ? ` · <span class="lay">${Math.round(total / flock * 100)}% laying</span>` : '';
+            // Today isn't finished, so today shows the average of the 6 days before it;
+            // a past day is complete and shows its own rate
+            let lay = '';
+            if (!loading && !recordDay) {
+                const collected = recordSource().filter(e => e.type === 'collected');
+                let eggs = 0, hens = 0;
+                for (let i = 1; i <= 6; i++) {
+                    const d = addDays(today, -i), list = collected.filter(e => e.date === d);
+                    if (!list.length) continue;   // a day nobody logged would drag the average down
+                    eggs += sum(list, e => e.eggs);
+                    hens += flockSizeOn(d);
+                }
+                if (hens > 0) lay = `${Math.round(eggs / hens * 100)}% laying <span class="lay-note">(6-day avg)</span>`;
+            } else if (!loading && flock > 0 && dayList.length) {
+                lay = `${Math.round(total / flock * 100)}% laying`;
+            }
+            $('layRate').innerHTML = lay ? ` · <span class="lay">${lay}</span>` : '';
             $('todaySplit').innerHTML = USERS.map(u =>
                 `<div><span>${esc(u)}</span><b class="num">${loading ? '…' : sum(dayList.filter(e => e.user === u), e => e.eggs)}</b></div>`
             ).join('');

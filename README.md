@@ -1,13 +1,13 @@
 # Egg App
 
-Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.3.
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.4.
 
 **Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
 
 ## What it does
 
 - **Who's this?**: pick Nate or Ruth once per phone. It's remembered until you tap **Switch user**, and every entry is stamped with that name.
-- **Record tab**: today's egg total with a Nate/Ruth breakout and the lay rate (eggs ÷ hens). Use the **+1 / +6 / +12 / +42** buttons (42 = a full tray) and **Undo last**.
+- **Record tab**: today's egg total with a Nate/Ruth breakout and the lay rate (eggs ÷ hens). On today it shows the average of the 6 days before, since today isn't finished; a past day shows its own rate (days nobody logged are skipped). Use the **+1 / +6 / +12 / +42** buttons (42 = a full tray) and **Undo last**.
   - Tap the total (✏️) to set it directly. Lowering it takes eggs off whoever logged more that day; raising it adds them for whoever is using the phone. Both are saved as corrections.
   - **Last 7 days** chart with this week's total. The day shown is gold, and tapping a bar jumps to that day.
   - The **‹ ›** arrows beside the date step back to past days, so missed collections can be added with the same buttons.
