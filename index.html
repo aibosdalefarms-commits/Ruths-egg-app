@@ -573,7 +573,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.4</div>
+        <div class="version">Egg App v1.5</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -899,23 +899,20 @@
                 : day === addDays(today, -1) ? 'Yesterday · ' + shortDay(day)
                 : shortDay(day);
             const total = sum(dayList, e => e.eggs);
-            const flock = flockSizeOn(day);
             $('todayTotal').textContent = loading ? '…' : total;
-            // Today isn't finished, so today shows the average of the 6 days before it;
-            // a past day is complete and shows its own rate
+            // Lay rate is always the average of the 6 days before the day shown
+            // (today isn't finished, and the same rule applies when looking back)
             let lay = '';
-            if (!loading && !recordDay) {
+            if (!loading) {
                 const collected = recordSource().filter(e => e.type === 'collected');
                 let eggs = 0, hens = 0;
                 for (let i = 1; i <= 6; i++) {
-                    const d = addDays(today, -i), list = collected.filter(e => e.date === d);
+                    const d = addDays(day, -i), list = collected.filter(e => e.date === d);
                     if (!list.length) continue;   // a day nobody logged would drag the average down
                     eggs += sum(list, e => e.eggs);
                     hens += flockSizeOn(d);
                 }
                 if (hens > 0) lay = `${Math.round(eggs / hens * 100)}% laying <span class="lay-note">(6-day avg)</span>`;
-            } else if (!loading && flock > 0 && dayList.length) {
-                lay = `${Math.round(total / flock * 100)}% laying`;
             }
             $('layRate').innerHTML = lay ? ` · <span class="lay">${lay}</span>` : '';
             $('todaySplit').innerHTML = USERS.map(u =>
