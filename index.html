@@ -187,13 +187,14 @@
         .total-btn .big { margin-top: 0; }
         .total-btn .i { width: 20px; height: 20px; color: var(--steel); }
         .lay { color: var(--grass); }
+        .lay-line { min-height: 20px; margin-top: 2px; font-size: 14px; font-weight: 600; }
         .lay-note { color: var(--steel); font-weight: 500; }
 
         /* Last 7 days chart */
         .week-chart { flex: 1; min-height: 136px; max-height: 240px; padding: 12px 14px 10px; display: flex; flex-direction: column; }
         .chart-head { display: flex; justify-content: space-between; align-items: baseline; }
         .chart-head .muted { font-size: 14px; }
-        .chart-head b { font-family: var(--font-display); font-size: 18px; color: var(--ink); margin-left: 4px; }
+        .chart-head b { font-family: var(--font-display); font-size: 18px; color: var(--ink); margin-right: 3px; }
         .bars { flex: 1; min-height: 64px; display: flex; gap: 8px; margin-top: 8px; }
         .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; min-width: 0; border-radius: 6px; }
         .bar-col:active { background: var(--steel-tint); }
@@ -471,7 +472,8 @@
                     <button class="day-arrow" id="dayNext" aria-label="Next day"><svg class="i"><use href="#i-chev"/></svg></button>
                     <div class="day-line"><span class="label" id="todayLabel">Today</span><button class="today-pill hidden" id="backToday">Today</button></div>
                     <button class="total-btn" id="totalBtn" aria-label="Edit total"><span class="big num" id="todayTotal">0</span><svg class="i"><use href="#i-pencil"/></svg></button>
-                    <div class="unit">eggs collected<span id="layRate"></span></div>
+                    <div class="unit">eggs collected</div>
+                    <div class="lay-line" id="layRate"></div>
                     <div class="split" id="todaySplit"></div>                </div>
                 <div class="card week-chart">
                     <div class="chart-head"><span class="label">Last 7 days</span><span class="muted" id="weekTotal"></span></div>
@@ -573,7 +575,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.5</div>
+        <div class="version">Egg App v1.6</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -914,7 +916,7 @@
                 }
                 if (hens > 0) lay = `${Math.round(eggs / hens * 100)}% laying <span class="lay-note">(6-day avg)</span>`;
             }
-            $('layRate').innerHTML = lay ? ` · <span class="lay">${lay}</span>` : '';
+            $('layRate').innerHTML = lay ? `<span class="lay">${lay}</span>` : '';
             $('todaySplit').innerHTML = USERS.map(u =>
                 `<div><span>${esc(u)}</span><b class="num">${loading ? '…' : sum(dayList.filter(e => e.user === u), e => e.eggs)}</b></div>`
             ).join('');
@@ -943,11 +945,8 @@
             $('barDays').innerHTML = days.map(d =>
                 `<span class="${d === day ? 'sel' : ''}">${esc(parseYmd(d).toLocaleDateString([], { weekday: 'short' }).slice(0, 2))}</span>`
             ).join('');
-            // Sunday–Saturday week containing the day being viewed
-            const ws = weekStart(day);
-            const weekEggs = sum(collected.filter(e => e.date >= ws && e.date <= addDays(ws, 6)), e => e.eggs);
-            const weekName = ws === weekStart(today) ? 'This week' : 'Week of ' + fmtDay(ws, { month: 'short', day: 'numeric' });
-            $('weekTotal').innerHTML = `${esc(weekName)}<b class="num">${loading ? '…' : weekEggs}</b>`;
+            // Total of the 7 days in the chart, in dozens
+            $('weekTotal').innerHTML = `<b class="num">${loading ? '…' : fmtDz(sum(totals, n => n))}</b> dozen`;
         }
         $('bars').addEventListener('click', e => {
             const b = e.target.closest('[data-day]');
