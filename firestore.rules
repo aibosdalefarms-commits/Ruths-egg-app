@@ -32,6 +32,23 @@ service cloud.firestore {
       allow delete: if signedIn();
     }
 
+    // Expenses: one document per expense (amount in cents)
+    match /expenses/{expenseId} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && validExpense(request.resource.data);
+      allow delete: if signedIn();
+    }
+
+    function validExpense(d) {
+      return d.keys().hasAll(['date', 'cents', 'user', 'createdAt'])
+        && d.keys().hasOnly(['date', 'cents', 'note', 'user', 'createdAt', 'updatedAt'])
+        && d.date is string && d.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && d.cents is int && d.cents > 0 && d.cents < 10000000
+        && d.user in ['Nate', 'Ruth']
+        && (!('note' in d) || (d.note is string && d.note.size() <= 500))
+        && d.createdAt is timestamp;
+    }
+
     // Shared settings: the price list and the flock (start date + size history)
     match /settings/main {
       allow read: if signedIn();
