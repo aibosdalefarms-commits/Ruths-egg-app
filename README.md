@@ -1,6 +1,6 @@
 # Egg App
 
-Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.7.
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.8.
 
 **Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
 
@@ -16,16 +16,17 @@ Daily egg collection and weekly sales for our backyard flock. It's a PWA on Fire
 - **Sales tab**: last week and this week, in dozens and dollars. Weeks run Sunday to Saturday.
   - **Customers**: one row per price with **+6** (half dozen) and **+12** (dozen). Tap a row's count to correct this week's total for that price.
   - **Farm**: free eggs sent to the family farm, with **+6 / +12 / +42**. Tap the total to correct it. Farm eggs aren't counted in dollars.
-- **Expenses tab**: the running total of all expenses at the top, **Add expense** (amount, date, optional note), and a list of every expense (date and amount, newest first). Tap one to see its note and who added it, or to edit or delete it.
-- **Stats tab** (read only, scrolls): everything counts from the flock start date.
-  - Totals: eggs collected, dozens sold (+ farm), dollars earned, average price per dozen.
+- **Expenses tab**: the running total of all expenses at the top, **Add expense** (Farm or Personal, amount, date, optional note), and a list of every expense (date and amount, newest first). Tap one to see its note and who added it, or to edit or delete it.
+- **Stats tab** (read only, scrolls): everything counts from the flock start date, including expenses.
+  - Tiles: eggs collected, dozens sold (+ farm), average dozens sold per week, average price per dozen, best day and best week.
   - A ring of where the eggs go (sold vs farm).
-  - Charts for eggs collected, lay rate, dozens sold (sold + farm stacked), earnings and average price per dozen. **12 weeks** shows Sunday–Saturday weeks; **All** shows each month as its average per week so part-months compare fairly. Tap a bar to see its numbers.
-  - Records: best day, best week, top lay rate, and how far the eggs would stretch end to end.
+  - **Eggs collected per week** and **lay rate per week**: the last 4 finished Sunday–Saturday weeks next to a striped bar for the average week since the flock started. Tap a bar to see its numbers.
+  - **Your eggs**: neighbour sales minus personal expenses and the flock cost gives the net so far, with a **Flock paid back** bar.
+  - **Farm (eggs for feed)**: farm expenses ÷ dozens sent to the farm gives what the farm effectively pays per dozen, next to the average neighbour price.
 - **Menu** (tap your name at the top right):
   - **History**: one card per day (today and yesterday first, then **Load more** for 7 more days) showing eggs collected, dozens sold with dollars, and dozens to the farm. Tap a day to set its totals; the differences are saved as corrections. Empty days are listed too, so a missed day can be filled in. **Go to date** jumps to any day (with the six days before it).
   - **Export**: CSV for a date range, including expenses (in their own Expense column, with the note).
-  - **Flock**: total eggs since the flock start date, the start date itself, and the current number of hens with − / + buttons. Each size change is saved with its date, so past days keep the right lay rate.
+  - **Flock**: total eggs since the flock start date, the start date itself, the **flock cost** (personal; used for Flock paid back and kept out of Expenses), and the current number of hens with − / + buttons. Each size change is saved with its date, so past days keep the right lay rate.
   - **Prices**: the price list shown on the Customers tab.
   - **Switch user**
 
@@ -36,8 +37,8 @@ Every tap saves one small entry instead of overwriting a total, so both phones c
 | Collection | Contents |
 |---|---|
 | `entries` | `type` (`collected` / `sold` / `farm`), `eggs` (whole eggs: +6 = half dozen), `price` (per dozen, sales only), `user`, `date` (YYYY-MM-DD), `createdAt`, optional `adjust: true` for corrections |
-| `expenses` | `date` (YYYY-MM-DD), `cents` (amount in cents), optional `note`, `user`, `createdAt`, `updatedAt` |
-| `settings/main` | `prices`: the price list. `flockStart`: YYYY-MM-DD. `flockLog`: `[{ date, size }]`, the flock size from each date on. |
+| `expenses` | `date` (YYYY-MM-DD), `cents` (amount in cents), optional `note`, `paidBy` (`farm` / `personal`; blank counts as farm), `user`, `createdAt`, `updatedAt` |
+| `settings/main` | `prices`: the price list. `flockStart`: YYYY-MM-DD. `flockLog`: `[{ date, size }]`, the flock size from each date on. `flockCost`: cents. |
 
 A correction (setting a new total anywhere in the app) saves the difference as an entry marked `adjust`, so the data shows exactly what changed. The individual entries can be seen in the CSV export.
 

@@ -222,6 +222,7 @@
         .exp-row + .exp-row { border-top: 1px solid var(--line); }
         .exp-row:active { background: var(--steel-tint); }
         .exp-row .exp-date { font-weight: 600; }
+        .exp-row .exp-date small { display: block; font-size: 12px; font-weight: 600; color: var(--steel); }
         .exp-row .exp-amt { font-family: var(--font-display); font-weight: 700; font-size: 20px; font-variant-numeric: tabular-nums; }
         .exp-row .i { width: 16px; height: 16px; color: var(--steel-soft); }
         .exp-view-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
@@ -239,10 +240,7 @@
         .stat-tile small { font-size: 13px; color: var(--steel); }
         .sc-card { padding: 12px 14px 10px; }
         .sc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-        .sc-legend { display: flex; gap: 10px; font-size: 12px; color: var(--steel); font-weight: 600; }
-        .sc-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
         .sc-plot { position: relative; height: 128px; margin-top: 10px; border-bottom: 1px solid var(--line-strong); }
-        .sc-max { position: absolute; left: 0; right: 0; top: 0; border-top: 1px dashed var(--line); font-size: 11px; color: var(--steel-soft); line-height: 1; padding-top: 2px; pointer-events: none; }
         .sc-cols { position: absolute; inset: 0; display: flex; gap: 4px; }
         .sc-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; position: relative; border-radius: 6px 6px 0 0; }
         .sc-col.sel { background: var(--steel-tint); }
@@ -251,9 +249,6 @@
         .sc-stack .sc-seg:last-child { border-radius: 4px 4px 2px 2px; }
         .sc-col.partial .sc-seg { opacity: 0.55; }
         .sc-val { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 700; color: var(--ink); white-space: nowrap; pointer-events: none; }
-        .sc-dot { position: absolute; left: 50%; width: 9px; height: 9px; border-radius: 50%; background: var(--sold); box-shadow: 0 0 0 2px var(--surface); transform: translate(-50%, 50%); pointer-events: none; }
-        .sc-dot.on { width: 12px; height: 12px; }
-        .sc-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
         .sc-x { display: flex; gap: 4px; margin-top: 4px; }
         .sc-x span { flex: 1; min-width: 0; text-align: center; font-size: 11px; color: var(--steel); white-space: nowrap; overflow: visible; }
         .sc-detail { margin-top: 8px; font-size: 14px; color: var(--steel); font-variant-numeric: tabular-nums; }
@@ -262,9 +257,20 @@
         .ring-row svg { flex: none; }
         .ring-legend { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
         .ring-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
-        .records { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
-        .records small { display: block; font-size: 12px; color: var(--steel); font-weight: 600; }
-        .records b { font-family: var(--font-display); font-size: 18px; }
+        .sc-sep { width: 1px; align-self: stretch; background: var(--line-strong); margin: 0 3px; }
+        .sc-sep-x { width: 1px; margin: 0 3px; }
+        .sc-seg.avg { background: repeating-linear-gradient(135deg, var(--bar) 0 5px, var(--grass-bar) 5px 10px) !important; }
+        .sc-x span.avg { font-weight: 700; color: var(--ink); }
+        .m-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 0; font-size: 15px; }
+        .m-row.m-total { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 8px; font-weight: 600; }
+        .m-row.m-total b { font-family: var(--font-display); font-size: 24px; }
+        .m-row b.neg { color: var(--comb); }
+        .m-row b.pos { color: var(--grass); }
+        .m-pay { margin-top: 12px; }
+        .m-pay-head { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--steel); margin-bottom: 4px; }
+        .m-bar { height: 12px; border-radius: 6px; background: var(--steel-tint); overflow: hidden; }
+        .m-bar span { display: block; height: 100%; border-radius: 6px; background: var(--sold); }
+        .m-pay .muted { font-size: 13px; margin-top: 4px; }
         .date-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
         .hist-banner { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: var(--r-md); background: var(--gold-tint); color: var(--ink); font-weight: 600; }
         .add-btn span { font-size: 14px; color: var(--steel); font-weight: 600; }
@@ -551,24 +557,16 @@
 
             <!-- Stats (read only) -->
             <section class="tab hidden" id="tabStats">
-                <div class="seg" id="statsPeriod">
-                    <button class="active" data-period="weeks">12 weeks</button>
-                    <button data-period="months">All</button>
-                </div>
                 <div class="stat-tiles" id="statTiles"></div>
+                <div class="stat-tiles" id="statRecords"></div>
                 <div class="card sc-card">
                     <div class="label">Where the eggs go</div>
                     <div class="ring-row" id="ringRow"></div>
                 </div>
                 <div class="card sc-card" id="chartProd"></div>
                 <div class="card sc-card" id="chartLay"></div>
-                <div class="card sc-card" id="chartSold"></div>
-                <div class="card sc-card" id="chartEarn"></div>
-                <div class="card sc-card" id="chartPrice"></div>
-                <div class="card sc-card">
-                    <div class="label">Records</div>
-                    <div class="records" id="records"></div>
-                </div>
+                <div class="card sc-card" id="moneyOurs"></div>
+                <div class="card sc-card" id="moneyFarm"></div>
                 <p class="note" id="statsNote"></p>
             </section>
 
@@ -604,7 +602,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.7</div>
+        <div class="version">Egg App v1.8</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -653,6 +651,13 @@
     <div id="expEditSheet" class="sheet hidden">
         <div class="grab"></div>
         <h2 id="expEditTitle">Add expense</h2>
+        <div class="field">
+            <span class="field-label">Paid by</span>
+            <div class="seg" id="expPaidBy">
+                <button data-paid="farm">Farm</button>
+                <button data-paid="personal">Personal</button>
+            </div>
+        </div>
         <div class="field">
             <label for="expAmount">Amount</label>
             <div class="prefix"><span>$</span><input class="input num" id="expAmount" inputmode="decimal" placeholder="0.00" autocomplete="off"></div>
@@ -746,6 +751,11 @@
             <div class="field" style="margin-bottom:0">
                 <label for="flockStart">Flock start date</label>
                 <input type="date" class="input" id="flockStart">
+            </div>
+            <div class="field" style="margin-bottom:0">
+                <label for="flockCost">Flock cost</label>
+                <div class="prefix"><span>$</span><input class="input num" id="flockCost" inputmode="decimal" placeholder="0.00" autocomplete="off"></div>
+                <span class="muted" style="font-size:13px">What the birds cost you. Used for "Flock paid back" on Stats. Don't also add it in Expenses.</span>
             </div>
             <div class="card flock-card">
                 <div class="label">Current flock</div>
@@ -852,6 +862,7 @@
         let prices = DEFAULT_PRICES.slice();
         let flockStart = null;    // 'YYYY-MM-DD' or null
         let flockLog = [];        // [{ date, size }] sorted by date: the flock size from that day on
+        let flockCost = 0;        // what the current flock cost, in cents (personal, kept out of Expenses)
         let salesPane = 'customers';
         let recordDay = null;     // a past day being viewed on the Record tab; null = today
         let dayEntries = null;    // live entries for that day when it's older than `recent` covers
@@ -886,9 +897,11 @@
                 flockLog = (Array.isArray(d.flockLog) ? d.flockLog : [])
                     .filter(f => f && typeof f.date === 'string' && typeof f.size === 'number')
                     .sort((a, b) => a.date.localeCompare(b.date));
+                flockCost = Number.isInteger(d.flockCost) ? d.flockCost : 0;
                 render();
                 renderPriceEditor();
                 renderFlock(startChanged);
+                renderStats();
             }, showError);
         }
 
@@ -1324,6 +1337,7 @@
             if (!flockOpen) return;
             $('flockSize').textContent = size;
             if (document.activeElement !== $('flockStart')) $('flockStart').value = flockStart || '';
+            if (document.activeElement !== $('flockCost')) $('flockCost').value = flockCost ? (flockCost / 100).toFixed(2) : '';
             $('flockStart').max = today;
             if (reloadTotal) loadFlockTotal();
         }
@@ -1366,6 +1380,15 @@
             const v = $('flockStart').value;
             if (!/^\d{4}-\d{2}-\d{2}$/.test(v) || v > today) return;
             settingsRef.set({ flockStart: v, updatedAt: serverTime() }, { merge: true }).catch(showError);
+        });
+        $('flockCost').addEventListener('change', () => {
+            const raw = $('flockCost').value.trim();
+            const v = raw === '' ? 0 : parseNum(raw);
+            if (!isFinite(v) || v < 0 || v >= 100000) { toast('Enter the flock cost, like 750.00', true); return; }
+            const cents = Math.round(v * 100);
+            settingsRef.set({ flockCost: cents, updatedAt: serverTime() }, { merge: true })
+                .then(() => toast(cents ? `Flock cost set to ${fmtMoney(cents)}` : 'Flock cost cleared'))
+                .catch(showError);
         });
         $('switchUser').addEventListener('click', () => {
             closeLayers(1);
@@ -1523,22 +1546,25 @@
                 renderExpenses();
             }, showError);
         }
+        const paidBy = e => (e.paidBy === 'personal' ? 'personal' : 'farm');   // older/blank = farm
         const expDay = s => fmtDay(s, s.slice(0, 4) === today.slice(0, 4)
             ? { weekday: 'short', month: 'short', day: 'numeric' }
             : { month: 'short', day: 'numeric', year: 'numeric' });
 
         function renderExpenses() {
             const total = sum(expenses, e => e.cents);
+            const farm = sum(expenses.filter(e => paidBy(e) === 'farm'), e => e.cents);
             $('expTotal').textContent = fmtMoney(total);
             $('expCount').textContent = expenses.length
-                ? `${expenses.length} expense${expenses.length === 1 ? '' : 's'} since ${fmtDay(expenses[expenses.length - 1].date, { month: 'short', day: 'numeric', year: 'numeric' })}`
+                ? `Farm ${fmtMoney(farm)} · Personal ${fmtMoney(total - farm)}`
                 : '';
             $('expList').innerHTML = expenses.length ? expenses.map(e => `<button class="exp-row" data-exp="${esc(e.id)}">
-                    <span class="exp-date">${esc(expDay(e.date))}</span>
+                    <span class="exp-date">${esc(expDay(e.date))}<small>${paidBy(e) === 'farm' ? 'Farm' : 'Personal'}</small></span>
                     <span class="exp-amt">${fmtMoney(e.cents)}</span>
                     <svg class="i"><use href="#i-chev"/></svg>
                 </button>`).join('')
                 : '<div class="empty">No expenses yet. Tap Add expense to record one.</div>';
+            renderStats();
         }
 
         let expViewing = null, expEditing = null;   // expense being viewed / edited (null = adding)
@@ -1551,12 +1577,20 @@
             $('expViewDate').textContent = fmtDay(exp.date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
             $('expViewNote').textContent = exp.note || 'No note';
             $('expViewNote').classList.toggle('none', !exp.note);
-            $('expViewMeta').textContent = `Added by ${exp.user} on ${new Date(exp.ts).toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${fmtTime(exp.ts)}`;
+            $('expViewMeta').textContent = `${paidBy(exp) === 'farm' ? 'Farm' : 'Personal'} expense · added by ${exp.user} on ${new Date(exp.ts).toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${fmtTime(exp.ts)}`;
             openLayer($('expViewSheet'));
         });
 
+        let expPaid = 'farm';
+        const showPaid = () => $('expPaidBy').querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.paid === expPaid));
+        $('expPaidBy').addEventListener('click', e => {
+            const b = e.target.closest('[data-paid]');
+            if (b) { expPaid = b.dataset.paid; showPaid(); }
+        });
         function openExpenseEditor(exp, opts) {
             expEditing = exp;
+            expPaid = exp ? paidBy(exp) : 'farm';
+            showPaid();
             $('expEditTitle').textContent = exp ? 'Edit expense' : 'Add expense';
             $('expAmount').value = exp ? (exp.cents / 100).toFixed(2) : '';
             $('expDate').value = exp ? exp.date : today;
@@ -1586,7 +1620,7 @@
             const note = $('expNote').value.trim().slice(0, 500);
             if (!isFinite(v) || v <= 0 || v >= 100000) { toast('Enter an amount, like 24.99', true); return; }
             if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > today) { toast('Pick a date (not in the future)', true); return; }
-            const data = { date, cents: Math.round(v * 100), note };
+            const data = { date, cents: Math.round(v * 100), note, paidBy: expPaid };
             closeLayers(1);
             if (expEditing) {
                 expensesRef.doc(expEditing.id).update({ ...data, updatedAt: serverTime() }).then(() => toast('Saved')).catch(showError);
@@ -1597,9 +1631,9 @@
         });
 
         // ---------- Stats (read only) ----------
-        // Everything counts from the flock start date. "12 weeks" shows Sunday–Saturday weeks;
-        // "All" shows one bar per month as the average per week, so part-months compare fairly.
-        let statsPeriod = 'weeks', statsEntries = null, statsFrom = null, statsSel = null, statsLoading = false;
+        // Everything counts from the flock start date. The production charts compare the last
+        // 4 finished Sunday–Saturday weeks with the average week since the flock started.
+        let statsEntries = null, statsFrom = null, statsSel = {}, statsLoading = false;
 
         async function loadStats() {
             if (statsLoading) return;
@@ -1609,7 +1643,7 @@
                 const snap = await (flockStart ? entriesRef.where('date', '>=', flockStart) : entriesRef).get();
                 statsEntries = snap.docs.map(d => d.data()).filter(e => e.date <= today);
                 statsFrom = flockStart || statsEntries.reduce((m, e) => (e.date < m ? e.date : m), today);
-                statsSel = null;
+                statsSel = {};
                 renderStats();
             } catch (err) {
                 showError(err);
@@ -1619,119 +1653,87 @@
         }
 
         const daysIncl = (a, z) => Math.round((parseYmd(z) - parseYmd(a)) / 86400000) + 1;
-        const monthEnd = m => { const d = parseYmd(m + '-01'); d.setMonth(d.getMonth() + 1); d.setDate(0); return ymd(d); };
-        const prevMonth = m => { const d = parseYmd(m + '-01'); d.setMonth(d.getMonth() - 1); return ymd(d).slice(0, 7); };
         function niceMax(v) {
             if (!(v > 0)) return 0;
             const p = 10 ** Math.floor(Math.log10(v)), n = v / p;
             return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
         }
+        const signedMoney = c => (c < 0 ? '− ' : '') + fmtMoney(Math.abs(Math.round(c)));
+        const shortMd = d => fmtDay(d, { month: 'short', day: 'numeric' });
 
-        function statBuckets() {
-            const from = statsFrom, buckets = [];
-            if (statsPeriod === 'weeks') {
-                for (let ws = weekStart(today), i = 0; i < 12 && addDays(ws, 6) >= from; i++, ws = addDays(ws, -7)) {
-                    buckets.unshift({ start: ws, end: addDays(ws, 6) });
-                }
-            } else {
-                for (let m = today.slice(0, 7); ; m = prevMonth(m)) {
-                    buckets.unshift({ start: m + '-01', end: monthEnd(m) });
-                    if (m <= from.slice(0, 7)) break;
-                }
-            }
-            for (const b of buckets) {
-                const a = b.start < from ? from : b.start, z = b.end > today ? today : b.end;
-                const list = statsEntries.filter(e => e.date >= a && e.date <= z);
-                const days = daysIncl(a, z);
+        // The last 4 finished weeks (oldest first) plus the average week; null if no week has finished yet
+        function productionWeeks() {
+            const lastSat = addDays(weekStart(today), -1);
+            if (lastSat < statsFrom) return null;
+            const collected = statsEntries.filter(e => e.type === 'collected');
+            const span = (a, z) => {
+                const list = collected.filter(e => e.date >= a && e.date <= z);
                 let hens = 0;
                 for (let d = a; d <= z; d = addDays(d, 1)) hens += flockSizeOn(d);
-                const eggs = sum(list.filter(e => e.type === 'collected'), e => e.eggs);
-                const sold = list.filter(e => e.type === 'sold');
-                const soldEggs = sum(sold, e => e.eggs), cents = sum(sold, valueCents);
-                const farmEggs = sum(list.filter(e => e.type === 'farm'), e => e.eggs);
-                const k = statsPeriod === 'months' ? 7 / days : 1;
-                Object.assign(b, {
-                    eggs: eggs * k, soldEggs: soldEggs * k, farmEggs: farmEggs * k, cents: cents * k,
-                    lay: hens && list.some(e => e.type === 'collected') ? eggs / hens : null,
-                    price: soldEggs > 0 ? cents / 100 / (soldEggs / 12) : null,
-                    partial: z < b.end || a > b.start,
-                    startsLate: a > b.start ? a : null
+                return { eggs: sum(list, e => e.eggs), hens, logged: list.length > 0, days: daysIncl(a, z) };
+            };
+            const items = [];
+            for (let ws = weekStart(lastSat), i = 0; i < 4 && addDays(ws, 6) >= statsFrom; i++, ws = addDays(ws, -7)) {
+                const a = ws < statsFrom ? statsFrom : ws, s = span(a, addDays(ws, 6));
+                items.unshift({
+                    label: shortMd(ws),
+                    name: `Week of ${shortMd(ws)}${a > ws ? ` (from ${shortMd(a)})` : ''}`,
+                    eggs: s.eggs, lay: s.logged && s.hens ? s.eggs / s.hens : null, partial: a > ws
                 });
             }
-            return buckets;
+            const all = span(statsFrom, lastSat);
+            items.push({
+                label: 'Avg', avg: true, name: `Average week since ${shortMd(statsFrom)}`,
+                eggs: all.eggs / all.days * 7, lay: all.logged && all.hens ? all.eggs / all.hens : null
+            });
+            return items;
         }
 
-        const bucketShort = b => statsPeriod === 'weeks'
-            ? fmtDay(b.start, { month: 'short', day: 'numeric' })
-            : parseYmd(b.start).toLocaleDateString([], { month: 'short' });
-        const bucketName = b => statsPeriod === 'weeks'
-            ? `Week of ${fmtDay(b.start, { month: 'short', day: 'numeric' })}${partialNote(b)}`
-            : `${parseYmd(b.start).toLocaleDateString([], { month: 'long', year: 'numeric' })}${partialNote(b)}`;
-        const partialNote = b => b.startsLate ? ` (from ${fmtDay(b.startsLate, { month: 'short', day: 'numeric' })})` : b.partial ? ' (so far)' : '';
-
-        function xLabels(buckets, nogap) {
-            const n = buckets.length, k = Math.ceil(n / 6);
-            return `<div class="sc-x"${nogap ? ' style="gap:0"' : ''}>${buckets.map((b, i) =>
-                `<span>${(n - 1 - i) % k === 0 ? esc(bucketShort(b)) : ''}</span>`).join('')}</div>`;
-        }
-
-        // Stacked bars. series: [{ get(b), color }]
-        function barChart(el, { title, legend, buckets, series, fmt, detail }) {
-            const totals = buckets.map(b => sum(series, s => Math.max(0, s.get(b) || 0)));
-            const top = niceMax(Math.max(0, ...totals));
-            const sel = statsSel ?? buckets.length - 1;
-            el.innerHTML = `<div class="sc-head"><span class="label">${title}</span>${legend || ''}</div>
-                <div class="sc-plot">${top ? `<div class="sc-max">${fmt(top)}</div>` : ''}
-                    <div class="sc-cols">${buckets.map((b, i) => {
-                        const h = top ? totals[i] / top * 100 : 0;
-                        return `<button class="sc-col${i === sel ? ' sel' : ''}${b.partial ? ' partial' : ''}" data-i="${i}" aria-label="${esc(bucketName(b))}">
-                            ${i === sel && totals[i] ? `<span class="sc-val" style="bottom:calc(${h}% + 3px)">${fmt(totals[i])}</span>` : ''}
-                            <span class="sc-stack" style="height:${h}%">${series.map(s => {
-                                const v = Math.max(0, s.get(b) || 0);
-                                return v ? `<span class="sc-seg" style="flex:${v};background:${s.color}"></span>` : '';
-                            }).join('')}</span>
+        // Bars for the 4 weeks, a divider, then the (striped) average bar
+        function compareChart(el, key, { title, items, value, fmt, top, detail }) {
+            const sel = statsSel[key] ?? items.length - 1;
+            const vals = items.map(value);
+            const max = top || niceMax(Math.max(0, ...vals.filter(v => v != null)));
+            el.innerHTML = `<div class="sc-head"><span class="label">${title}</span></div>
+                <div class="sc-plot">
+                    <div class="sc-cols">${items.map((it, i) => {
+                        const v = vals[i], h = max && v != null ? Math.max(0, v) / max * 100 : 0;
+                        return `${it.avg ? '<span class="sc-sep"></span>' : ''}<button class="sc-col${i === sel ? ' sel' : ''}${it.partial ? ' partial' : ''}" data-chart="${key}" data-i="${i}" aria-label="${esc(it.name)}">
+                            ${v != null ? `<span class="sc-val" style="bottom:calc(${h}% + 3px)">${fmt(v)}</span>` : ''}
+                            <span class="sc-stack" style="height:${h}%"><span class="sc-seg${it.avg ? ' avg' : ''}" style="flex:1;background:var(--bar)"></span></span>
                         </button>`;
                     }).join('')}</div>
                 </div>
-                ${xLabels(buckets)}
-                <div class="sc-detail">${buckets.length ? detail(buckets[sel]) : 'No data yet'}</div>`;
-        }
-
-        // Line with dots; gaps where there's no value
-        function lineChart(el, { title, buckets, get, lo, hi, fmt, detail }) {
-            const n = buckets.length, sel = statsSel ?? n - 1;
-            const vals = buckets.map(get);
-            const x = i => (i + 0.5) / n * 100;
-            const y = v => hi > lo ? (v - lo) / (hi - lo) * 100 : 0;
-            const runs = [];
-            let run = [];
-            vals.forEach((v, i) => { if (v == null) { if (run.length) runs.push(run); run = []; } else run.push(`${x(i)},${100 - y(v)}`); });
-            if (run.length) runs.push(run);
-            el.innerHTML = `<div class="sc-head"><span class="label">${title}</span></div>
-                <div class="sc-plot"><div class="sc-max">${fmt(hi)}</div>
-                    <svg class="sc-line" viewBox="0 0 100 100" preserveAspectRatio="none">${runs.map(r =>
-                        `<polyline points="${r.join(' ')}" fill="none" stroke="var(--sold)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>`).join('')}</svg>
-                    <div class="sc-cols" style="gap:0">${buckets.map((b, i) => `<button class="sc-col${i === sel ? ' sel' : ''}" data-i="${i}" aria-label="${esc(bucketName(b))}">
-                        ${vals[i] == null ? '' : `<span class="sc-dot${i === sel ? ' on' : ''}" style="bottom:${y(vals[i])}%"></span>`}
-                        ${i === sel && vals[i] != null ? `<span class="sc-val" style="bottom:calc(${y(vals[i])}% + 9px)">${fmt(vals[i])}</span>` : ''}
-                    </button>`).join('')}</div>
-                </div>
-                ${xLabels(buckets, true)}
-                <div class="sc-detail">${n ? detail(buckets[sel]) : 'No data yet'}</div>`;
+                <div class="sc-x">${items.map(it => `${it.avg ? '<span class="sc-sep-x"></span>' : ''}<span${it.avg ? ' class="avg"' : ''}>${esc(it.label)}</span>`).join('')}</div>
+                <div class="sc-detail">${detail(items[sel])}</div>`;
         }
 
         function renderStats() {
             if (!statsEntries) return;
-            const all = statsEntries;
+            const all = statsEntries, from = statsFrom;
             const collected = all.filter(e => e.type === 'collected'), sold = all.filter(e => e.type === 'sold'), farm = all.filter(e => e.type === 'farm');
             const eggs = sum(collected, e => e.eggs), soldEggs = sum(sold, e => e.eggs), cents = sum(sold, valueCents), farmEggs = sum(farm, e => e.eggs);
-            const since = fmtDay(statsFrom, { month: 'short', day: 'numeric', year: 'numeric' });
+            const since = fmtDay(from, { month: 'short', day: 'numeric', year: 'numeric' });
+            const weeksSoFar = daysIncl(from, today) / 7;
+            const avgPrice = soldEggs > 0 ? cents / 100 / (soldEggs / 12) : null;
 
             $('statTiles').innerHTML = `
                 <div class="stat-tile"><span class="label">Eggs collected</span><b class="num">${eggs.toLocaleString()}</b><small>since ${esc(since)}</small></div>
                 <div class="stat-tile"><span class="label">Dozen sold</span><b class="num">${fmtDz(soldEggs)}</b><small>+ ${fmtDz(farmEggs)} dz to the farm</small></div>
-                <div class="stat-tile"><span class="label">Earned</span><b class="num" style="color:var(--grass)">${fmtMoney(cents)}</b><small>from ${fmtDz(soldEggs)} dz</small></div>
-                <div class="stat-tile"><span class="label">Avg per dozen</span><b class="num">${soldEggs > 0 ? fmtPrice(cents / 100 / (soldEggs / 12)) : '–'}</b><small>all sales</small></div>`;
+                <div class="stat-tile"><span class="label">Avg dozen / week</span><b class="num">${fmtDz(soldEggs / weeksSoFar)}</b><small>sold to neighbours</small></div>
+                <div class="stat-tile"><span class="label">Avg $ / dozen</span><b class="num">${avgPrice != null ? fmtPrice(avgPrice) : '–'}</b><small>all sales</small></div>`;
+
+            // Records since the flock start
+            const byDay = {};
+            collected.forEach(e => { byDay[e.date] = (byDay[e.date] || 0) + e.eggs; });
+            const dayList = Object.entries(byDay);
+            const bestDay = dayList.reduce((m, d) => (!m || d[1] > m[1] ? d : m), null);
+            const byWeek = {};
+            dayList.forEach(([d, n]) => { const w = weekStart(d); byWeek[w] = (byWeek[w] || 0) + n; });
+            const bestWeek = Object.entries(byWeek).reduce((m, w) => (!m || w[1] > m[1] ? w : m), null);
+            $('statRecords').innerHTML = `
+                <div class="stat-tile"><span class="label">Best day</span><b class="num">${bestDay ? bestDay[1] : '–'}</b><small>${bestDay ? 'eggs · ' + esc(shortMd(bestDay[0])) : 'no eggs yet'}</small></div>
+                <div class="stat-tile"><span class="label">Best week</span><b class="num">${bestWeek ? bestWeek[1].toLocaleString() : '–'}</b><small>${bestWeek ? 'eggs · week of ' + esc(shortMd(bestWeek[0])) : 'no eggs yet'}</small></div>`;
 
             // Sold vs farm ring
             const out = soldEggs + farmEggs;
@@ -1752,75 +1754,66 @@
                 $('ringRow').innerHTML = '<div class="muted">No eggs sold or sent to the farm yet.</div>';
             }
 
-            const buckets = statBuckets();
-            const per = statsPeriod === 'months' ? ' a week' : '';
-            barChart($('chartProd'), {
-                title: statsPeriod === 'weeks' ? 'Eggs collected by week' : 'Eggs collected · avg per week', buckets,
-                series: [{ get: b => b.eggs, color: 'var(--bar)' }],
-                fmt: v => Math.round(v).toLocaleString(),
-                detail: b => `${esc(bucketName(b))}: <b>${Math.round(b.eggs).toLocaleString()}</b> eggs${per}`
-            });
-            const lays = buckets.map(b => b.lay).filter(v => v != null);
-            lineChart($('chartLay'), {
-                title: 'Lay rate', buckets, get: b => b.lay,
-                lo: 0, hi: Math.max(1, Math.ceil(Math.max(0, ...lays) * 10) / 10), fmt: v => Math.round(v * 100) + '%',
-                detail: b => b.lay == null ? `${esc(bucketName(b))}: no eggs logged` : `${esc(bucketName(b))}: <b>${Math.round(b.lay * 100)}%</b> of hens laying`
-            });
-            barChart($('chartSold'), {
-                title: statsPeriod === 'weeks' ? 'Dozen sold by week' : 'Dozen sold · avg per week', buckets,
-                legend: '<span class="sc-legend"><span><i style="background:var(--sold)"></i>Sold</span><span><i style="background:var(--farm)"></i>Farm</span></span>',
-                series: [{ get: b => b.soldEggs / 12, color: 'var(--sold)' }, { get: b => b.farmEggs / 12, color: 'var(--farm)' }],
-                fmt: v => (Math.round(v * 10) / 10).toFixed(1),
-                detail: b => `${esc(bucketName(b))}: <b>${fmtDz(b.soldEggs)}</b> dz sold · ${fmtDz(b.farmEggs)} dz farm${per}`
-            });
-            barChart($('chartEarn'), {
-                title: statsPeriod === 'weeks' ? 'Earnings by week' : 'Earnings · avg per week', buckets,
-                series: [{ get: b => b.cents / 100, color: 'var(--sold)' }],
-                fmt: v => '$' + Math.round(v).toLocaleString(),
-                detail: b => `${esc(bucketName(b))}: <b>${fmtMoney(Math.round(b.cents))}</b>${per}`
-            });
-            const pricesSeen = buckets.map(b => b.price).filter(v => v != null);
-            lineChart($('chartPrice'), {
-                title: 'Average price per dozen', buckets, get: b => b.price,
-                lo: pricesSeen.length ? Math.max(0, Math.floor(Math.min(...pricesSeen) - 0.5)) : 0,
-                hi: pricesSeen.length ? Math.ceil(Math.max(...pricesSeen) + 0.5) : 1,
-                fmt: v => fmtPrice(v),
-                detail: b => b.price == null ? `${esc(bucketName(b))}: no sales` : `${esc(bucketName(b))}: <b>${fmtPrice(b.price)}</b> a dozen`
-            });
+            // Production: last 4 finished weeks vs the average week
+            const weeks = productionWeeks();
+            if (weeks) {
+                compareChart($('chartProd'), 'prod', {
+                    title: 'Eggs collected per week', items: weeks, value: it => it.eggs,
+                    fmt: v => Math.round(v).toLocaleString(),
+                    detail: it => `${esc(it.name)}: <b>${Math.round(it.eggs).toLocaleString()}</b> eggs`
+                });
+                const lays = weeks.map(it => it.lay).filter(v => v != null);
+                compareChart($('chartLay'), 'lay', {
+                    title: 'Lay rate per week', items: weeks, value: it => it.lay,
+                    top: Math.max(1, Math.ceil(Math.max(0, ...lays) * 10) / 10),
+                    fmt: v => Math.round(v * 100) + '%',
+                    detail: it => it.lay == null ? `${esc(it.name)}: no eggs logged` : `${esc(it.name)}: <b>${Math.round(it.lay * 100)}%</b> of hens laying`
+                });
+            } else {
+                const msg = '<div class="muted" style="margin-top:8px">Shows up once the first full week (Sunday to Saturday) is finished.</div>';
+                $('chartProd').innerHTML = '<div class="label">Eggs collected per week</div>' + msg;
+                $('chartLay').innerHTML = '<div class="label">Lay rate per week</div>' + msg;
+            }
 
-            // Records since the flock start
-            const byDay = {};
-            collected.forEach(e => { byDay[e.date] = (byDay[e.date] || 0) + e.eggs; });
-            const dayList = Object.entries(byDay);
-            const bestDay = dayList.reduce((m, d) => (!m || d[1] > m[1] ? d : m), null);
-            const byWeek = {};
-            dayList.forEach(([d, n]) => { const w = weekStart(d); byWeek[w] = (byWeek[w] || 0) + n; });
-            const bestWeek = Object.entries(byWeek).reduce((m, w) => (!m || w[1] > m[1] ? w : m), null);
-            const bestLay = dayList.map(([d, n]) => [d, n / flockSizeOn(d)]).reduce((m, d) => (!m || d[1] > m[1] ? d : m), null);
-            const metres = eggs * 0.057;   // an egg is about 5.7 cm long
-            const md = d => fmtDay(d, { month: 'short', day: 'numeric' });
-            $('records').innerHTML = `
-                <div><small>Best day</small><b class="num">${bestDay ? `${bestDay[1]} eggs` : '–'}</b><div class="muted">${bestDay ? esc(md(bestDay[0])) : ''}</div></div>
-                <div><small>Best week</small><b class="num">${bestWeek ? `${bestWeek[1].toLocaleString()} eggs` : '–'}</b><div class="muted">${bestWeek ? 'Week of ' + esc(md(bestWeek[0])) : ''}</div></div>
-                <div><small>Top lay rate</small><b class="num">${bestLay ? Math.round(bestLay[1] * 100) + '%' : '–'}</b><div class="muted">${bestLay ? esc(md(bestLay[0])) : ''}</div></div>
-                <div><small>End to end</small><b class="num">${metres >= 1000 ? (metres / 1000).toFixed(2) + ' km' : Math.round(metres) + ' m'}</b><div class="muted">of eggs, laid in a line</div></div>`;
+            // Money, since the flock start. The flock cost lives on the Flock screen, not in Expenses.
+            const inRange = expenses.filter(e => e.date >= from && e.date <= today);
+            const personal = sum(inRange.filter(e => paidBy(e) === 'personal'), e => e.cents);
+            const farmExp = sum(inRange.filter(e => paidBy(e) === 'farm'), e => e.cents);
+            const net = cents - personal - flockCost;
+            const row = (label, value, cls = '') => `<div class="m-row${cls}"><span>${label}</span><span class="num">${value}</span></div>`;
+            let payback;
+            if (flockCost > 0) {
+                const paid = cents - personal, pct = Math.max(0, Math.min(1, paid / flockCost));
+                payback = `<div class="m-pay">
+                        <div class="m-pay-head"><span>${paid >= flockCost ? 'Flock paid off' : 'Flock paid back'}</span><span class="num">${Math.round(pct * 100)}%</span></div>
+                        <div class="m-bar"><span style="width:${pct * 100}%"></span></div>
+                        <div class="muted num">${paid >= flockCost ? `${signedMoney(paid - flockCost)} ahead of the ${fmtMoney(flockCost)} flock cost` : `${signedMoney(Math.max(0, paid))} of ${fmtMoney(flockCost)}`}</div>
+                    </div>`;
+            } else {
+                payback = '<div class="muted" style="margin-top:8px">Add the flock cost in Menu → Flock to track when the flock has paid for itself.</div>';
+            }
+            $('moneyOurs').innerHTML = `<div class="label">Your eggs (neighbour sales)</div>
+                ${row('Sales', fmtMoney(cents))}
+                ${row('Personal expenses', signedMoney(-personal))}
+                ${flockCost > 0 ? row('Flock', signedMoney(-flockCost)) : ''}
+                ${row('Net so far', `<b class="${net < 0 ? 'neg' : 'pos'}">${signedMoney(net)}</b>`, ' m-total')}
+                ${payback}`;
 
-            $('statsNote').textContent = `Everything counts from the flock start, ${since}. ` +
-                (statsPeriod === 'weeks' ? 'Weeks run Sunday to Saturday. Tap a bar to see its numbers.' : 'Each month shows its average per week, so part-months compare fairly. Tap a bar to see its numbers.');
+            const farmDz = farmEggs / 12;
+            $('moneyFarm').innerHTML = `<div class="label">Farm (eggs for feed)</div>
+                ${row('Dozen sent to the farm', fmtDz(farmEggs) + ' dz')}
+                ${row('Farm expenses', fmtMoney(farmExp))}
+                ${row('Farm pays', `<b>${farmDz > 0 && farmExp > 0 ? fmtPrice(farmExp / 100 / farmDz) + ' / dz' : '–'}</b>`, ' m-total')}
+                <div class="muted" style="margin-top:4px">${avgPrice != null ? `Neighbours pay ${fmtPrice(avgPrice)} / dz on average` : 'No neighbour sales yet to compare'}</div>`;
+
+            $('statsNote').textContent = `Everything counts from the flock start, ${since} (set in Menu → Flock), including expenses. ` +
+                'The weekly charts show the last 4 finished weeks (Sunday to Saturday) next to your average week. Tap a bar to see its numbers.';
         }
 
-        $('statsPeriod').addEventListener('click', e => {
-            const b = e.target.closest('[data-period]');
-            if (!b || b.dataset.period === statsPeriod) return;
-            statsPeriod = b.dataset.period;
-            statsSel = null;
-            $('statsPeriod').querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
-            renderStats();
-        });
         $('tabStats').addEventListener('click', e => {
-            const col = e.target.closest('.sc-col');
+            const col = e.target.closest('.sc-col[data-chart]');
             if (!col) return;
-            statsSel = Number(col.dataset.i);
+            statsSel[col.dataset.chart] = Number(col.dataset.i);
             renderStats();
         });
 
@@ -1860,7 +1853,7 @@
                 const cell = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
                 const lines = [['Date', 'Time', 'Type', 'Eggs', 'Dozen', 'Price per dozen', 'Value', 'Expense', 'Person', 'Note'].join(',')];
                 rows.forEach(e => lines.push(e.type === 'expense'
-                    ? [e.date, fmtTime(e.ts), 'Expense', '', '', '', '', (e.cents / 100).toFixed(2), e.user, e.note || '']
+                    ? [e.date, fmtTime(e.ts), paidBy(e) === 'farm' ? 'Expense (farm)' : 'Expense (personal)', '', '', '', '', (e.cents / 100).toFixed(2), e.user, e.note || '']
                         .map(cell).join(',')
                     : [
                         e.date, fmtTime(e.ts), typeLabel[e.type] || e.type, e.eggs, (e.eggs / 12).toFixed(2),
