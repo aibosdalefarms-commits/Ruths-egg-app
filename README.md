@@ -1,6 +1,6 @@
 # Egg App
 
-Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.9.
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.10.
 
 **Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
 
@@ -26,7 +26,7 @@ Daily egg collection and weekly sales for our backyard flock. It's a PWA on Fire
 - **Menu** (tap your name at the top right):
   - **History**: one card per day (today and yesterday first, then **Load more** for 7 more days) showing eggs collected, dozens sold with dollars, and dozens to the farm. Tap a day to set its totals; the differences are saved as corrections. Empty days are listed too, so a missed day can be filled in. **Go to date** jumps to any day (with the six days before it).
   - **Export**: CSV for a date range, including expenses (in their own Expense column, with the note).
-  - **Flock**: total eggs since the flock start date, the start date itself, the **flock cost** (personal; used for Flock paid back and kept out of Expenses), and the current number of hens with − / + buttons. Each size change is saved with its date, so past days keep the right lay rate.
+  - **Flock**: total eggs since the flock start date, the start date itself, the **flock cost** (personal; used for Flock paid back and kept out of Expenses), and the number of hens with − / + buttons. The **‹ ›** arrows step back through past days: changing a past day changes only that day, while changing today carries forward, so lay rates stay right.
   - **Prices**: the price list shown on the Customers tab.
   - **Switch user**
 

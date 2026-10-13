@@ -213,6 +213,11 @@
         .flock-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 14px; }
         .flock-steps button { height: 60px; border-radius: var(--r-md); background: var(--steel-tint); font-size: 30px; font-weight: 700; }
         .flock-steps button:active { background: var(--line-strong); }
+        #flockCard { position: relative; }
+        #flockPrev { left: 6px; }
+        #flockNext { right: 6px; }
+        #flockCard.past { background: var(--egg-tint); border-color: var(--egg); }
+        #flockCard.past .label { color: var(--egg); }
 
         /* Expenses tab */
         .exp-total { padding: 16px; text-align: center; }
@@ -601,7 +606,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.9</div>
+        <div class="version">Egg App v1.10</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -756,16 +761,18 @@
                 <div class="prefix"><span>$</span><input class="input num" id="flockCost" inputmode="decimal" placeholder="0.00" autocomplete="off"></div>
                 <span class="muted" style="font-size:14px">What the birds cost you. Used for "Flock paid back" on Stats. Don't also add it in Expenses.</span>
             </div>
-            <div class="card flock-card">
-                <div class="label">Current flock</div>
+            <div class="card flock-card" id="flockCard">
+                <button class="day-arrow" id="flockPrev" aria-label="Previous day"><svg class="i"><use href="#i-chev-left"/></svg></button>
+                <button class="day-arrow" id="flockNext" aria-label="Next day"><svg class="i"><use href="#i-chev"/></svg></button>
+                <div class="day-line"><span class="label" id="flockDayLabel">Today</span><button class="today-pill hidden" id="flockToday">Today</button></div>
                 <div class="flock-big num" id="flockSize"></div>
-                <div class="muted">hens</div>
+                <div class="muted" id="flockSizeNote">hens</div>
                 <div class="flock-steps">
                     <button id="flockMinus" aria-label="One less hen">−</button>
                     <button id="flockPlus" aria-label="One more hen">+</button>
                 </div>
             </div>
-            <p class="note">The flock size sets the lay rate on the Record tab. Each change is saved with today's date, so past days keep the flock size they had.</p>
+            <p class="note">The flock size sets the lay rate. Use the arrows to fix a past day: changing a past day only changes that day. Changing today carries forward to the days after.</p>
         </div></div>
     </div>
 
@@ -1324,17 +1331,28 @@
         });
 
         // ---------- Flock screen ----------
-        let flockDraft = null, flockTimer = null, flockOpen = false;
+        let flockDraft = null, flockTimer = null, flockOpen = false;   // flockDraft: { day, size } not saved yet
+        let flockDay = null;   // the day shown on the Flock card; null = today
+        const flockShown = () => flockDay || today;
+        const flockSizeShown = day => (flockDraft && flockDraft.day === day ? flockDraft.size : flockSizeOn(day));
         function openFlock() {
             flockOpen = true;
+            flockDay = null;
             renderFlock(true);
-            openLayer($('flockScreen'), { replace: true, onClose: () => { flockOpen = false; } });
+            openLayer($('flockScreen'), { replace: true, onClose: () => { saveFlockNow(); flockOpen = false; } });
         }
         function renderFlock(reloadTotal) {
-            const size = flockDraft ?? flockSizeOn(today);
-            $('menuFlock').textContent = `${size} hens`;
+            $('menuFlock').textContent = `${flockSizeShown(today)} hens`;
             if (!flockOpen) return;
-            $('flockSize').textContent = size;
+            const day = flockShown(), past = day < today;
+            $('flockCard').classList.toggle('past', past);
+            $('flockDayLabel').textContent = !past ? 'Today · ' + shortDay(today)
+                : day === addDays(today, -1) ? 'Yesterday · ' + shortDay(day) : shortDay(day);
+            $('flockToday').classList.toggle('hidden', !past);
+            $('flockNext').disabled = !past;
+            $('flockPrev').disabled = day <= (flockStart || addDays(today, -365));
+            $('flockSize').textContent = flockSizeShown(day);
+            $('flockSizeNote').textContent = past ? 'hens on this day' : 'hens';
             if (document.activeElement !== $('flockStart')) $('flockStart').value = flockStart || '';
             if (document.activeElement !== $('flockCost')) $('flockCost').value = flockCost ? (flockCost / 100).toFixed(2) : '';
             $('flockStart').max = today;
@@ -1355,26 +1373,45 @@
                 $('flockSince').textContent = `Since ${fmtDay(flockStart, { month: 'short', day: 'numeric', year: 'numeric' })} · ${days} day${days === 1 ? '' : 's'} · avg ${Math.round(eggs / Math.max(days, 1))} a day`;
             } catch (err) { showError(err); }
         }
-        function stepFlock(dir) {
-            flockDraft = Math.max(0, Math.min(9999, (flockDraft ?? flockSizeOn(today)) + dir));
-            renderFlock(false);
-            render();
+        // The log holds the flock size "from this date on". Setting a past day changes only that day
+        // (the next day keeps what it had); setting today carries forward.
+        function flockLogWith(day, size) {
+            let log = flockLog.map(f => ({ ...f }));
+            if (!log.length) log.push({ date: '2000-01-01', size: flockSizeOn(day) });
+            const next = addDays(day, 1), nextSize = flockSizeOn(next);
+            log = log.filter(f => f.date !== day);
+            log.push({ date: day, size });
+            if (day < today && !log.some(f => f.date === next)) log.push({ date: next, size: nextSize });
+            log.sort((a, b) => a.date.localeCompare(b.date));
+            // Drop entries that don't change anything (keeps the list short)
+            return log.filter((f, i) => i === 0 || f.size !== log[i - 1].size);
+        }
+        function saveFlockNow() {
             clearTimeout(flockTimer);
-            // Wait for a pause in tapping, then save today's size once
-            flockTimer = setTimeout(() => {
-                const size = flockDraft;
-                const log = flockLog.filter(f => f.date !== today);
-                // Keep the size the flock had before today for past days' lay rates
-                if (!log.length) log.push({ date: '2000-01-01', size: flockSizeOn(addDays(today, -1)) });
-                log.push({ date: today, size });
-                log.sort((a, b) => a.date.localeCompare(b.date));
-                settingsRef.set({ flockLog: log.slice(-500), updatedAt: serverTime() }, { merge: true })
-                    .then(() => { flockDraft = null; })
-                    .catch(err => { flockDraft = null; showError(err); renderFlock(false); });
-            }, 700);
+            if (!flockDraft) return;
+            const { day, size } = flockDraft;
+            if (size === flockSizeOn(day)) { flockDraft = null; return; }
+            settingsRef.set({ flockLog: flockLogWith(day, size).slice(-500), updatedAt: serverTime() }, { merge: true })
+                .then(() => { if (flockDraft && flockDraft.day === day && flockDraft.size === size) flockDraft = null; renderFlock(false); })
+                .catch(err => { flockDraft = null; showError(err); renderFlock(false); });
+        }
+        function stepFlock(dir) {
+            const day = flockShown();
+            flockDraft = { day, size: Math.max(0, Math.min(9999, flockSizeShown(day) + dir)) };
+            renderFlock(false);
+            clearTimeout(flockTimer);
+            flockTimer = setTimeout(saveFlockNow, 700);   // save once tapping pauses
+        }
+        function moveFlockDay(d) {
+            saveFlockNow();
+            flockDay = d && d < today ? d : null;
+            renderFlock(false);
         }
         $('flockMinus').addEventListener('click', () => stepFlock(-1));
         $('flockPlus').addEventListener('click', () => stepFlock(1));
+        $('flockPrev').addEventListener('click', () => moveFlockDay(addDays(flockShown(), -1)));
+        $('flockNext').addEventListener('click', () => moveFlockDay(addDays(flockShown(), 1)));
+        $('flockToday').addEventListener('click', () => moveFlockDay(null));
         $('flockStart').addEventListener('change', () => {
             const v = $('flockStart').value;
             if (!/^\d{4}-\d{2}-\d{2}$/.test(v) || v > today) return;
