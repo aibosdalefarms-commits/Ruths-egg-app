@@ -1,6 +1,6 @@
 # Egg App
 
-Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.8.
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.9.
 
 **Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
 
@@ -18,9 +18,9 @@ Daily egg collection and weekly sales for our backyard flock. It's a PWA on Fire
   - **Farm**: free eggs sent to the family farm, with **+6 / +12 / +42**. Tap the total to correct it. Farm eggs aren't counted in dollars.
 - **Expenses tab**: the running total of all expenses at the top, **Add expense** (Farm or Personal, amount, date, optional note), and a list of every expense (date and amount, newest first). Tap one to see its note and who added it, or to edit or delete it.
 - **Stats tab** (read only, scrolls): everything counts from the flock start date, including expenses.
-  - Tiles: eggs collected, dozens sold (+ farm), average dozens sold per week, average price per dozen, best day and best week.
+  - Tiles: eggs collected, dozens sold (+ farm), average dozens collected per week, average price per dozen, best day and best week.
   - A ring of where the eggs go (sold vs farm).
-  - **Eggs collected per week** and **lay rate per week**: the last 4 finished Sunday–Saturday weeks next to a striped bar for the average week since the flock started. Tap a bar to see its numbers.
+  - **Eggs collected per week** and **lay rate per week**: a striped bar for the average week since the flock started, then the last 4 finished Sunday–Saturday weeks.
   - **Your eggs**: neighbour sales minus personal expenses and the flock cost gives the net so far, with a **Flock paid back** bar.
   - **Farm (eggs for feed)**: farm expenses ÷ dozens sent to the farm gives what the farm effectively pays per dozen, next to the average neighbour price.
 - **Menu** (tap your name at the top right):
