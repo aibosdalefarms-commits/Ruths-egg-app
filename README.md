@@ -1,6 +1,6 @@
 # Egg App
 
-Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.10.
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.11.
 
 **Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
 
@@ -25,7 +25,7 @@ Daily egg collection and weekly sales for our backyard flock. It's a PWA on Fire
   - **Farm (eggs for feed)**: farm expenses ÷ dozens sent to the farm gives what the farm effectively pays per dozen, next to the average neighbour price.
 - **Menu** (tap your name at the top right):
   - **History**: one card per day (today and yesterday first, then **Load more** for 7 more days) showing eggs collected, dozens sold with dollars, and dozens to the farm. Tap a day to set its totals; the differences are saved as corrections. Empty days are listed too, so a missed day can be filled in. **Go to date** jumps to any day (with the six days before it).
-  - **Export**: CSV for a date range, including expenses (in their own Expense column, with the note).
+  - **Export**: CSV for a date range. Eggs collected are one row per day (the day's total); sales and farm are one row per entry; expenses are included in their own Expense column, with the note.
   - **Flock**: total eggs since the flock start date, the start date itself, the **flock cost** (personal; used for Flock paid back and kept out of Expenses), and the number of hens with − / + buttons. The **‹ ›** arrows step back through past days: changing a past day changes only that day, while changing today carries forward, so lay rates stay right.
   - **Prices**: the price list shown on the Customers tab.
   - **Switch user**
@@ -40,7 +40,7 @@ Every tap saves one small entry instead of overwriting a total, so both phones c
 | `expenses` | `date` (YYYY-MM-DD), `cents` (amount in cents), optional `note`, `paidBy` (`farm` / `personal`; blank counts as farm), `user`, `createdAt`, `updatedAt` |
 | `settings/main` | `prices`: the price list. `flockStart`: YYYY-MM-DD. `flockLog`: `[{ date, size }]`, the flock size from each date on. `flockCost`: cents. |
 
-A correction (setting a new total anywhere in the app) saves the difference as an entry marked `adjust`, so the data shows exactly what changed. The individual entries can be seen in the CSV export.
+A correction (setting a new total anywhere in the app) saves the difference as an entry marked `adjust`, so the data shows exactly what changed. The CSV export shows each sale, farm entry and expense, plus one total per day for eggs collected.
 
 ## Tech stack
 

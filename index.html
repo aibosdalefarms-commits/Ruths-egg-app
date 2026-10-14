@@ -606,7 +606,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.10</div>
+        <div class="version">Egg App v1.11</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -1874,12 +1874,23 @@
             try {
                 const snap = await entriesRef.where('date', '>=', from).where('date', '<=', to).orderBy('date').get();
                 const expRows = expenses.filter(e => e.date >= from && e.date <= to).map(e => ({ ...e, type: 'expense' }));
-                const rows = [...snap.docs.map(docToEntry), ...expRows].sort((a, b) => a.date.localeCompare(b.date) || a.ts - b.ts);
+                const entries = snap.docs.map(docToEntry);
+                // Eggs collected: one row per day with the day's total (corrections included)
+                const byDay = {};
+                entries.filter(e => e.type === 'collected').forEach(e => {
+                    const d = (byDay[e.date] = byDay[e.date] || { date: e.date, type: 'dayTotal', eggs: 0, ts: 0 });
+                    d.eggs += e.eggs;
+                });
+                const dayRows = Object.values(byDay).filter(d => d.eggs !== 0);
+                const rows = [...dayRows, ...entries.filter(e => e.type !== 'collected'), ...expRows]
+                    .sort((a, b) => a.date.localeCompare(b.date) || a.ts - b.ts);
                 if (!rows.length) { toast('No entries in that range'); return; }
                 const typeLabel = { collected: 'Collected', sold: 'Sold', farm: 'Farm', expense: 'Expense' };
                 const cell = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
                 const lines = [['Date', 'Time', 'Type', 'Eggs', 'Dozen', 'Price per dozen', 'Value', 'Expense', 'Person', 'Note'].join(',')];
-                rows.forEach(e => lines.push(e.type === 'expense'
+                rows.forEach(e => lines.push(e.type === 'dayTotal'
+                    ? [e.date, '', 'Collected (day total)', e.eggs, (e.eggs / 12).toFixed(2), '', '', '', '', ''].map(cell).join(',')
+                    : e.type === 'expense'
                     ? [e.date, fmtTime(e.ts), paidBy(e) === 'farm' ? 'Expense (farm)' : 'Expense (personal)', '', '', '', '', (e.cents / 100).toFixed(2), e.user, e.note || '']
                         .map(cell).join(',')
                     : [
@@ -1896,7 +1907,7 @@
                 a.click();
                 a.remove();
                 setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-                toast(`Exported ${rows.length} entries`);
+                toast(`Exported ${rows.length} rows`);
             } catch (err) {
                 showError(err);
             } finally {
