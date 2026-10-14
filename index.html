@@ -33,6 +33,9 @@
             --grass-bar: #A9CF8A;
             --gold: #B88A1E;
             --gold-tint: #FAF3DF;
+            --sold: #3F7D22;          /* Stats: sold (green) vs farm (straw), checked for colour blindness */
+            --farm: #D4A72C;
+            --bar: #5E9A3A;
             --ink: #23272B;
             --steel: #646970;
             --steel-soft: #A3A7AD;
@@ -179,7 +182,11 @@
             box-shadow: 0 1px 2px var(--shadow); min-height: 78px;
         }
         .add-btn b { font-family: var(--font-display); font-weight: 700; font-size: 32px; line-height: 1; color: var(--comb); }
-        .add-grid .add-btn span { font-size: 14px; }
+        .add-btn span { font-size: 14px; color: var(--steel); font-weight: 600; }
+        .add-btn:active { background: var(--comb-tint); border-color: var(--comb); transform: scale(0.98); }
+        .add-btn.flash { animation: flash 0.35s ease-out; }
+        @keyframes flash { from { background: var(--comb-tint); border-color: var(--comb); } to { background: var(--surface); } }
+        .undo-row { display: flex; justify-content: center; }
 
         /* Editable total */
         .total-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0 8px; border-radius: var(--r-md); }
@@ -234,10 +241,8 @@
         .exp-view-head h2 { font-size: 34px; margin: 0; }
         .exp-note { margin: 12px 0 6px; font-size: 17px; white-space: pre-wrap; overflow-wrap: anywhere; }
         .exp-note.none { color: var(--steel); font-style: italic; }
-        textarea.input { height: auto; min-height: 84px; padding: 10px 12px; resize: vertical; line-height: 1.4; }
 
         /* Stats tab */
-        :root { --sold: #3F7D22; --farm: #D4A72C; --bar: #5E9A3A; }
         #tabStats { min-height: 0; }
         .stat-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 12px 14px; }
@@ -247,7 +252,7 @@
         .sc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
         .sc-plot { position: relative; height: 128px; margin-top: 10px; border-bottom: 1px solid var(--line-strong); }
         .sc-cols { position: absolute; inset: 0; display: flex; gap: 4px; }
-        .sc-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; position: relative; border-radius: 6px 6px 0 0; }
+        .sc-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; position: relative; }
         .sc-stack { display: flex; flex-direction: column-reverse; gap: 2px; margin: 0 1px; }
         .sc-seg { border-radius: 2px; min-height: 2px; }
         .sc-stack .sc-seg:last-child { border-radius: 4px 4px 2px 2px; }
@@ -256,7 +261,6 @@
         .sc-x { display: flex; gap: 4px; margin-top: 4px; }
         .sc-x span { flex: 1; min-width: 0; text-align: center; font-size: 12px; color: var(--steel); white-space: nowrap; overflow: visible; }
         .sc-detail { margin-top: 8px; font-size: 14px; color: var(--steel); font-variant-numeric: tabular-nums; }
-        .sc-detail b { color: var(--ink); }
         .ring-row { display: flex; align-items: center; gap: 18px; margin-top: 8px; }
         .ring-row svg { flex: none; }
         .ring-legend { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
@@ -275,13 +279,6 @@
         .m-bar { height: 12px; border-radius: 6px; background: var(--steel-tint); overflow: hidden; }
         .m-bar span { display: block; height: 100%; border-radius: 6px; background: var(--sold); }
         .m-pay .muted { font-size: 14px; margin-top: 4px; }
-        .date-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-        .hist-banner { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: var(--r-md); background: var(--gold-tint); color: var(--ink); font-weight: 600; }
-        .add-btn span { font-size: 14px; color: var(--steel); font-weight: 600; }
-        .add-btn:active { background: var(--comb-tint); border-color: var(--comb); transform: scale(0.98); }
-        .add-btn.flash { animation: flash 0.35s ease-out; }
-        @keyframes flash { from { background: var(--comb-tint); border-color: var(--comb); } to { background: var(--surface); } }
-        .undo-row { display: flex; justify-content: center; }
 
         /* ---------- Sales tab ---------- */
         .weeks { display: grid; grid-template-columns: 1fr 1fr; }
@@ -364,6 +361,8 @@
         .screen-inner { max-width: var(--content); margin: 0 auto; padding: 14px 14px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
 
         /* History */
+        .hist-banner { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: var(--r-md); background: var(--gold-tint); color: var(--ink); font-weight: 600; }
+        .date-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
         .hist-day { width: 100%; display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; text-align: left; }
         .hist-day:active { background: var(--steel-tint); }
         .hist-date { display: flex; align-items: center; justify-content: space-between; }
@@ -386,8 +385,6 @@
         .mini-stepper button { height: 44px; border-radius: 10px; background: var(--steel-tint); font-size: 22px; font-weight: 700; }
         .mini-stepper button:active { background: var(--line-strong); }
         .mini-stepper .input { height: 44px; padding: 0 4px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
-        .tag-sold { background: var(--grass-tint); color: var(--grass); }
-        .tag-farm { background: var(--steel-tint); color: var(--steel); }
         .empty { text-align: center; color: var(--steel); padding: 28px 12px; }
 
         /* Forms */
@@ -399,6 +396,7 @@
             font-size: 17px; -webkit-appearance: none; appearance: none;
         }
         .input:focus { outline: none; border-color: var(--comb); box-shadow: 0 0 0 3px var(--comb-ring); }
+        textarea.input { height: auto; min-height: 84px; padding: 10px 12px; resize: vertical; line-height: 1.4; }
         .stepper { display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; align-items: center; }
         .stepper button { height: 56px; border-radius: var(--r-md); background: var(--steel-tint); font-size: 26px; font-weight: 700; }
         .stepper button:active { background: var(--line-strong); }
@@ -428,7 +426,6 @@
         }
         .toast.show { opacity: 1; transform: translate(-50%, 0); }
         .toast.error { background: var(--comb); }
-        .banner { background: var(--comb-tint); color: var(--comb-deep); padding: 10px 14px; border-radius: var(--r-md); font-size: 14px; font-weight: 600; }
 
         /* Short phones: tighten the Record tab so it still fits without scrolling */
         @media (max-height: 700px) {
@@ -493,7 +490,6 @@
         <main class="main">
             <!-- Record -->
             <section class="tab" id="tabRecord">
-                <div id="setupBanner" class="banner hidden">Not connected to Firebase yet. Fill in the Firebase settings in index.html (see SETUP-GUIDE.md).</div>
                 <div class="card today">
                     <button class="day-arrow" id="dayPrev" aria-label="Previous day"><svg class="i"><use href="#i-chev-left"/></svg></button>
                     <button class="day-arrow" id="dayNext" aria-label="Next day"><svg class="i"><use href="#i-chev"/></svg></button>
@@ -501,7 +497,8 @@
                     <button class="total-btn" id="totalBtn" aria-label="Edit total"><span class="big num" id="todayTotal">0</span><svg class="i"><use href="#i-pencil"/></svg></button>
                     <div class="unit">eggs collected</div>
                     <div class="lay-line" id="layRate"></div>
-                    <div class="split" id="todaySplit"></div>                </div>
+                    <div class="split" id="todaySplit"></div>
+                </div>
                 <div class="card week-chart">
                     <div class="chart-head"><span class="label">Last 7 days</span><span class="muted" id="weekTotal"></span></div>
                     <div class="bars" id="bars"></div>
@@ -606,7 +603,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v1.11</div>
+        <div class="version">Egg App v2.0</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -709,7 +706,7 @@
             <h2>Export</h2>
         </div>
         <div class="screen-body"><div class="screen-inner">
-            <p class="note">Download a spreadsheet (CSV) with one row per entry. It opens in Excel or Google Sheets.</p>
+            <p class="note">Download a spreadsheet (CSV): one row per day for eggs collected, and one row per sale, farm entry and expense. It opens in Excel or Google Sheets.</p>
             <div class="chips" id="exportQuick">
                 <button class="chip" data-range="month">This month</button>
                 <button class="chip" data-range="year">This year</button>
@@ -806,7 +803,6 @@
         if (isLocalTestCopy) {
             firebaseConfig = { apiKey: 'demo-key', authDomain: 'demo-egg-app.firebaseapp.com', projectId: 'demo-egg-app' };
         }
-        const notConfigured = firebaseConfig.projectId === 'REPLACE_ME';
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -893,8 +889,10 @@
             }, showError);
         }
 
+        let unsubSettings = null;
         function subscribeSettings() {
-            settingsRef.onSnapshot(doc => {
+            if (unsubSettings) return;
+            unsubSettings = settingsRef.onSnapshot(doc => {
                 const d = doc.exists ? doc.data() : {};
                 const p = Array.isArray(d.prices) ? d.prices : DEFAULT_PRICES;
                 prices = p.filter(n => typeof n === 'number').sort((a, b) => a - b);
@@ -1043,9 +1041,9 @@
             return size;
         }
 
-        // Correct a day's collected total. Raising adds eggs for whoever is using the phone;
-        // lowering takes them off whoever logged more that day (then the other person).
-        // Adds the correction writes to `batch` and returns how many it added.
+        // Correct a day's collected total by adding correction entries to `batch` (returns how many).
+        // Raising adds eggs for whoever is using the phone; lowering takes them off whoever
+        // logged more that day (then the other person).
         function addCollectedCorrection(batch, entries, day, newTotal) {
             const list = entries.filter(e => e.type === 'collected' && e.date === day);
             const diff = newTotal - sum(list, e => e.eggs);
@@ -1575,10 +1573,7 @@
         function subscribeExpenses() {
             if (unsubExpenses) return;
             unsubExpenses = expensesRef.orderBy('date', 'desc').onSnapshot(snap => {
-                expenses = snap.docs.map(doc => {
-                    const d = doc.data({ serverTimestamps: 'estimate' });
-                    return { id: doc.id, ...d, ts: d.createdAt ? d.createdAt.toMillis() : Date.now() };
-                }).sort((a, b) => b.date.localeCompare(a.date) || b.ts - a.ts);
+                expenses = snap.docs.map(docToEntry).sort((a, b) => b.date.localeCompare(a.date) || b.ts - a.ts);
                 renderExpenses();
             }, showError);
         }
@@ -1592,7 +1587,7 @@
             const farm = sum(expenses.filter(e => paidBy(e) === 'farm'), e => e.cents);
             $('expTotal').textContent = fmtMoney(total);
             $('expCount').textContent = expenses.length
-                ? `Farm ${fmtMoney(farm)} · Personal ${fmtMoney(total - farm)}`
+                ? `All time · Farm ${fmtMoney(farm)} · Personal ${fmtMoney(total - farm)}`
                 : '';
             $('expList').innerHTML = expenses.length ? expenses.map(e => `<button class="exp-row" data-exp="${esc(e.id)}">
                     <span class="exp-date">${esc(expDay(e.date))}<small>${paidBy(e) === 'farm' ? 'Farm' : 'Personal'}</small></span>
@@ -1843,7 +1838,6 @@
                 'The weekly charts show your average week (striped) next to the last 4 finished weeks (Sunday to Saturday).';
         }
 
-
         // ---------- Export ----------
         function setExportRange(range) {
             const y = Number(today.slice(0, 4));
@@ -1885,7 +1879,7 @@
                 const rows = [...dayRows, ...entries.filter(e => e.type !== 'collected'), ...expRows]
                     .sort((a, b) => a.date.localeCompare(b.date) || a.ts - b.ts);
                 if (!rows.length) { toast('No entries in that range'); return; }
-                const typeLabel = { collected: 'Collected', sold: 'Sold', farm: 'Farm', expense: 'Expense' };
+                const typeLabel = { sold: 'Sold', farm: 'Farm' };
                 const cell = v => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
                 const lines = [['Date', 'Time', 'Type', 'Eggs', 'Dozen', 'Price per dozen', 'Value', 'Expense', 'Person', 'Note'].join(',')];
                 rows.forEach(e => lines.push(e.type === 'dayTotal'
@@ -1960,7 +1954,6 @@
         });
 
         // ---------- Start ----------
-        if (notConfigured) $('setupBanner').classList.remove('hidden');
         if (me) showApp(); else showPick();
         render();
         renderPriceEditor();
@@ -1972,7 +1965,7 @@
                 subscribeRecent();
                 subscribeSettings();
                 subscribeExpenses();
-            } else if (!notConfigured) {
+            } else {
                 auth.signInAnonymously().catch(showError);
             }
         });

@@ -21,6 +21,10 @@ The emulator ports differ from Bosdale Receipts (9099/8080), so both test copies
 
 The real security rules (`firestore.rules`) are loaded into the emulator, so tests exercise the same rules as the live app.
 
+## Stop it
+
+Press Ctrl+C in each terminal. The test data only lives in memory, so it's gone once the emulators stop.
+
 ## Wipe the test data without restarting
 
 ```bash

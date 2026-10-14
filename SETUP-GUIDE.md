@@ -1,5 +1,7 @@
 # Egg App setup guide
 
+The app is already set up: Ruth's project is `ruths-egg-app` (database in Toronto, `northamerica-northeast2`), the config is in `index.html`, and it's live at https://ruths-egg-app.web.app. These steps are kept for reference, e.g. if the app ever needs to move to a new Firebase project.
+
 ## 1. Ruth creates the Firebase project (about 5 minutes)
 
 Signed in with Ruth's Google account at https://console.firebase.google.com:
@@ -16,8 +18,8 @@ Signed in with Ruth's Google account at https://console.firebase.google.com:
 
 ## 2. Connect the app to the project
 
-1. In `index.html`, replace the `REPLACE_ME` values in `firebaseConfig` with the values from step 1.5.
-2. In `.firebaserc`, replace `REPLACE_ME` with the project ID.
+1. In `index.html`, put the values from step 1.5 into `firebaseConfig`.
+2. In `.firebaserc`, set the project ID.
 
 ## 3. Deploy
 
@@ -37,8 +39,11 @@ This publishes the database rules and the app. The address will be `https://<pro
 
 ## Everyday notes
 
-- **Wrong tap?** Tap **Undo last** right away, or fix it in **Menu → History**.
-- **Forgot a day?** Go to **Menu → History → Add** and pick the date.
+- **Wrong tap?** Tap **Undo last** right away, or tap the total (✏️) and set the right number.
+- **Forgot a day?** On the Record tab, use the **‹** arrow to go back to that day and tap the buttons. Sales and farm eggs for any day can be set in **Menu → History** (tap the day).
+- **A hen died or was added?** Go to **Menu → Flock** and use − / +. Use the arrows to fix a past day.
+- **New flock?** In **Menu → Flock**, set the new start date and the flock cost. Don't also add the flock cost in Expenses.
+- **Feed from the farm?** Add it in **Expenses** as **Farm**, with what it's worth.
 - **New price?** Go to **Menu → Prices**. Both phones update right away.
 - **Someone else's phone?** Use **Menu → Switch user**.
 

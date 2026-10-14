@@ -1,6 +1,6 @@
 # Egg App
 
-Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 1.11.
+Daily egg collection and weekly sales for our backyard flock. It's a PWA on Firebase, used by Nate and Ruth on their Android phones. Version 2.0.
 
 **Live app:** https://ruths-egg-app.web.app (Firebase project `ruths-egg-app`, owned by Ruth)
 
@@ -46,7 +46,7 @@ A correction (setting a new total anywhere in the app) saves the difference as a
 
 - **Frontend:** single-file vanilla HTML/CSS/JS ([index.html](index.html)) with no build step, the same approach as Bosdale Receipts
 - **Auth:** Firebase anonymous sign-in, done silently in the background. There are no passwords. The database only answers requests from the app.
-- **Database:** Cloud Firestore (region `northamerica-northeast2`, Toronto)
+- **Database:** Cloud Firestore (region `northamerica-northeast2`, Toronto; confirmed Oct 2026)
 - **Hosting:** Firebase Hosting
 - **Offline:** service worker ([sw.js](sw.js)). Network-first for the app, cache-first for icons, fonts and libraries. Firestore's offline cache keeps recent data on the phone, so the app opens to the last numbers before the server answers.
 

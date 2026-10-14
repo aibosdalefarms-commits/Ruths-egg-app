@@ -3,7 +3,7 @@ rules_version = '2';
 // Egg App security rules.
 // There are no passwords: the app signs in anonymously in the background, so only
 // requests coming from the app itself are answered. The data checks below stop
-// anything that isn't a well-formed egg entry from being saved.
+// anything that isn't a well-formed entry, expense or settings change from being saved.
 service cloud.firestore {
   match /databases/{database}/documents {
 
