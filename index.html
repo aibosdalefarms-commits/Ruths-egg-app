@@ -206,7 +206,8 @@
         .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; min-width: 0; border-radius: 6px; }
         .bar-col:active { background: var(--steel-tint); }
         .bar-val { font-size: 13px; font-weight: 600; color: var(--steel); font-variant-numeric: tabular-nums; }
-        .bar { width: 100%; border-radius: 5px 5px 0 0; background: var(--grass-bar); min-height: 3px; }
+        .bars { --bar-label: 22px; }   /* room for the number above each bar (line height + gap) */
+        .bar { width: 100%; border-radius: 5px 5px 0 0; background: var(--grass-bar); min-height: 3px; flex-shrink: 0; }
         .bar.nodata { background: var(--line-strong); }
         .bar.sel { background: var(--gold); }
         .bar-col.sel .bar-val { color: var(--gold); }
@@ -603,7 +604,7 @@
             <button class="menu-item" data-open="prices"><svg class="i"><use href="#i-tag"/></svg>Prices</button>
             <button class="menu-item" id="switchUser"><svg class="i"><use href="#i-swap"/></svg>Switch user<span class="end" id="menuUser"></span></button>
         </div>
-        <div class="version">Egg App v2.0</div>
+        <div class="version">Egg App v2.1</div>
     </div>
 
     <!-- Count correction (Customers row / Farm total) -->
@@ -1014,13 +1015,13 @@
             const loading = dayLoading();
             const totals = days.map(d => sum(collected.filter(e => e.date === d), e => e.eggs));
             const logged = days.map(d => collected.some(e => e.date === d));
-            const top = Math.max(flockSizeOn(end), ...totals, 1);
+            const top = Math.max(...totals, 1);   // the best day of the week fills the chart
             $('bars').innerHTML = days.map((d, i) => {
                 const sel = d === day ? ' sel' : '';
                 const pct = logged[i] && !loading ? Math.max(3, Math.round(Math.max(totals[i], 0) / top * 100)) : 0;
                 return `<button class="bar-col${sel}" data-day="${d}" aria-label="${esc(shortDay(d))}: ${totals[i]} eggs">
                     <span class="bar-val">${logged[i] && !loading ? totals[i] : ''}</span>
-                    <span class="bar${sel}${logged[i] ? '' : ' nodata'}" style="height:${pct ? pct + '%' : '3px'}"></span>
+                    <span class="bar${sel}${logged[i] ? '' : ' nodata'}" style="height:${pct ? `calc((100% - var(--bar-label)) * ${pct / 100})` : '3px'}"></span>
                 </button>`;
             }).join('');
             $('barDays').innerHTML = days.map(d =>
